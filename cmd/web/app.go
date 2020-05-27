@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 	"github.com/gorilla/sessions"
-	"request.thecornelius.duckdns.org/pkg/models"
 )
 
 // App structure

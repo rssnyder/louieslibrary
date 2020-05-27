@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 	"github.com/gorilla/mux"
-	"request.thecornelius.duckdns.org/pkg/forms"
 )
 
 // Home page of site

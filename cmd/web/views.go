@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 )
 
 // HTMLData models the page data

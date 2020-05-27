@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
