@@ -1,0 +1,27 @@
+{{define "base"}}
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>{{template "page-title" .}} - PlexRequests</title>
+		<link rel="stylesheet" href="/static/css/main.css">
+		<link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+	</head>
+	<body>
+		<header>
+			<h1><a href="/">PlexRequests</a></h1>
+		</header>
+		<nav>
+			<a href="/" {{if eq .Path "/"}}class="live"{{end}}>
+				Home
+			</a>
+			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
+				New request
+			</a>
+		</nav>
+		<section>
+			{{template "page-body" .}}
+		</section>
+	</body>
+</html>
+{{end}}

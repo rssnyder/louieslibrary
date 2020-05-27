@@ -1,0 +1,23 @@
+{{define "page-title"}}Home{{end}}
+
+{{define "page-body"}}
+    <h2>Latest Requests</h2>
+    {{if .Requests}}
+    <table>
+        <tr>
+            <th>Requester</th>
+            <th>Title</th>
+            <th>ID</th>
+        </tr>
+        {{range .Requests}}
+        <tr>
+            <td>{{.Requester}}</td>
+            <td><a href="/request/{{.ID}}">{{.Title}}</a></td>
+            <td>{{.ID}}</td>
+        </tr>
+        {{end}}
+    </table>
+    {{else}}
+        <p>there's nothing to see here yet!</p>
+    {{end}}
+{{end}}

@@ -1,0 +1,19 @@
+{{define "page-title"}}Request #{{.Request.ID}}{{end}}
+
+{{define "page-body"}}
+    {{with .Flash}}
+    <div class="flash">{{.}}</div>
+    {{end}}
+    {{with .Request}}
+    <div class="request">
+        <div class="metadata">
+            <strong>{{.Requester}}</strong>
+            <span>#{{.ID}}</span>
+        </div>
+        <pre><code>{{.Title}}</code></pre>
+        <div class="metadata">
+            <time>Created: {{humanDate .Created}}</time>
+        </div>
+    </div>
+    {{end}}
+{{end}}

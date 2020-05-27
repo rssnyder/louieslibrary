@@ -1,0 +1,81 @@
+package models
+
+import (
+	"database/sql"
+)
+
+// Database holds the db connection
+type Database struct {
+	*sql.DB
+}
+
+// GetRequest retrives a request from the db
+func (db *Database) GetRequest(id int) (*Request, error) {
+	// Query statement
+	stmt := `SELECT id, requester, title, completed, created FROM requests WHERE id = $1`
+
+	// Execute query
+	row := db.QueryRow(stmt, id)
+	r := &Request{}
+
+	// Pull data into request
+	err := row.Scan(&r.ID, &r.Requester, &r.Title, &r.Completed, &r.Created)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+// LatestRequests grabs the latest 10 valid request
+func (db *Database) LatestRequests() (Requests, error) {
+	// Query statement
+	stmt := `SELECT id, requester, title, completed, created FROM requests ORDER BY created DESC LIMIT 10`
+
+	// Execute query
+	rows, err := db.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	requests := Requests{}
+
+	// Get all the matching requets
+	for rows.Next() {
+		r := &Request{}
+
+		// Pull data into request
+		err := rows.Scan(&r.ID, &r.Requester, &r.Title, &r.Completed, &r.Created)
+		if err != nil {
+			return nil, err
+		}
+
+		requests = append(requests, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return requests, nil
+}
+
+// InsertRequest adds a new request to the db
+func (db *Database) InsertRequest(requester, title, source string) (int, error) {
+	// Save stored request
+	var requestid int
+
+	// Query statement
+	stmt := `INSERT INTO requests (requester, title, source, completed, created) VALUES ($1, $2, $3, FALSE, timezone('utc', now())) RETURNING id`
+
+	err := db.QueryRow(stmt, requester, title, source).Scan(&requestid)
+	if err != nil {
+		return 0, err
+	}
+
+	return requestid, nil
+}
