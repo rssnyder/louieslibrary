@@ -12,14 +12,14 @@ type Database struct {
 // GetRequest retrives a request from the db
 func (db *Database) GetRequest(id int) (*Request, error) {
 	// Query statement
-	stmt := `SELECT id, requester, title, completed, created FROM requests WHERE id = $1`
+	stmt := `SELECT id, requester, title, status, created FROM requests WHERE id = $1`
 
 	// Execute query
 	row := db.QueryRow(stmt, id)
 	r := &Request{}
 
 	// Pull data into request
-	err := row.Scan(&r.ID, &r.Requester, &r.Title, &r.Completed, &r.Created)
+	err := row.Scan(&r.ID, &r.Requester, &r.Title, &r.Status, &r.Created)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
@@ -32,7 +32,7 @@ func (db *Database) GetRequest(id int) (*Request, error) {
 // LatestRequests grabs the latest 10 valid request
 func (db *Database) LatestRequests() (Requests, error) {
 	// Query statement
-	stmt := `SELECT id, requester, title, completed, created FROM requests ORDER BY created DESC LIMIT 10`
+	stmt := `SELECT id, requester, title, status, created FROM requests ORDER BY created DESC LIMIT 10`
 
 	// Execute query
 	rows, err := db.Query(stmt)
@@ -49,7 +49,7 @@ func (db *Database) LatestRequests() (Requests, error) {
 		r := &Request{}
 
 		// Pull data into request
-		err := rows.Scan(&r.ID, &r.Requester, &r.Title, &r.Completed, &r.Created)
+		err := rows.Scan(&r.ID, &r.Requester, &r.Title, &r.Status, &r.Created)
 		if err != nil {
 			return nil, err
 		}
@@ -70,7 +70,7 @@ func (db *Database) InsertRequest(requester, title, source string) (int, error) 
 	var requestid int
 
 	// Query statement
-	stmt := `INSERT INTO requests (requester, title, source, completed, created) VALUES ($1, $2, $3, FALSE, timezone('utc', now())) RETURNING id`
+	stmt := `INSERT INTO requests (requester, title, source, status, created) VALUES ($1, $2, $3, 'missing', timezone('utc', now())) RETURNING id`
 
 	err := db.QueryRow(stmt, requester, title, source).Scan(&requestid)
 	if err != nil {

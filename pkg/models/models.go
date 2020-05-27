@@ -9,7 +9,7 @@ type Request struct {
 	ID        int
 	Requester string
 	Title     string
-	Completed bool
+	Status    string
 	Created   time.Time
 }
 

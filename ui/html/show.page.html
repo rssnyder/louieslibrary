@@ -7,8 +7,11 @@
     {{with .Request}}
     <div class="request">
         <div class="metadata">
-            <strong>{{.Requester}}</strong>
             <span>#{{.ID}}</span>
+            <strong>{{.Status}}</strong>
+        </div>
+        <div class="metadata">
+            <strong>{{.Requester}}</strong>
         </div>
         <pre><code>{{.Title}}</code></pre>
         <div class="metadata">
