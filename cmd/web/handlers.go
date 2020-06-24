@@ -64,12 +64,12 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		app.RenderHTML(w, r, "show.page.html", &HTMLData{
+		app.RenderHTML(w, r, "showrequest.page.html", &HTMLData{
 			Request: request,
 			Flash:   fmt.Sprintf("%v", flashes[0]),
 		})
 	} else {
-		app.RenderHTML(w, r, "show.page.html", &HTMLData{
+		app.RenderHTML(w, r, "showrequest.page.html", &HTMLData{
 			Request: request,
 			Flash:   "",
 		})
@@ -78,7 +78,7 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 
 // NewRequest displays the new request form
 func (app *App) NewRequest(w http.ResponseWriter, r *http.Request) {
-	app.RenderHTML(w, r, "new.page.html", &HTMLData{
+	app.RenderHTML(w, r, "newrequest.page.html", &HTMLData{
 		Form: &forms.NewRequest{},
 	})
 }
@@ -110,7 +110,7 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Validate form
 	if !form.Valid() {
-		app.RenderHTML(w, r, "new.page.html", &HTMLData{Form: form})
+		app.RenderHTML(w, r, "newrequest.page.html", &HTMLData{Form: form})
 		return
 	}
 
