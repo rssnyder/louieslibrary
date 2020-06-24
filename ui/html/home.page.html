@@ -1,6 +1,9 @@
 {{define "page-title"}}Home{{end}}
 
 {{define "page-body"}}
+    {{with .Flash}}
+        <div class="flash">{{.}}</div>
+    {{end}}
     <h2>Latest Requests</h2>
     {{if .Requests}}
     <table>

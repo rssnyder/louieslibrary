@@ -15,9 +15,24 @@
 			<a href="/" {{if eq .Path "/"}}class="live"{{end}}>
 				Home
 			</a>
+			{{if .User.ID}}
 			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
 				New request
 			</a>
+			<a href="/user/logout">
+				Logout
+			</a>
+			<a href="/user/{{.User.Username}}">
+				{{.User.Username}}
+			</a>
+			{{else}}
+			<a href="/user/login" {{if eq .Path "/user/login"}}class="live"{{end}}>
+				Login
+			</a>
+			<a href="/user/signup" {{if eq .Path "/user/signup"}}class="live"{{end}}>
+				Signup
+			</a>
+			{{end}}
 		</nav>
 		<section>
 			{{template "page-body" .}}

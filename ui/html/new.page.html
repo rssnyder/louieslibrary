@@ -3,15 +3,15 @@
 {{define "page-body"}}
 <form action="/request/new" method="POST">
     {{with .Form}}
-    <div>
+    <!-- <div>
         <label>Requester:</label>
         {{with .Failures.Requester}}
             <label class="error">{{.}}</label>
         {{end}}
         <input type="text" name="requester" value="{{.Requester}}">
-    </div>
+    </div> -->
     <div>
-        <label>Title:</label>
+        <label>Information (Title, Author, IBSN):</label>
         {{with .Failures.Title}}
             <label class="error">{{.}}</label>
         {{end}}

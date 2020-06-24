@@ -30,3 +30,37 @@ func (f *NewRequest) Valid() bool {
 
 	return len(f.Failures) == 0
 }
+
+// NewUser models the user signup
+type NewUser struct {
+	Username string
+	Email string
+	Password     string
+	Failures  map[string]string
+}
+
+// Valid makes sure the the fields are correctly formatted
+func (f *NewUser) Valid() bool {
+	f.Failures = make(map[string]string)
+
+	// Check for non-empty username
+	if strings.TrimSpace(f.Username) == "" {
+		f.Failures["Username"] = "Username is required"
+	} else if utf8.RuneCountInString(f.Username) > 60 {
+		f.Failures["Username"] = "Username cannot be longer than 60 characters"
+	}
+
+	// Check for non-empty email
+	if strings.TrimSpace(f.Email) == "" {
+		f.Failures["Email"] = "Email is required"
+	}
+
+	// Check for non-empty password
+	if strings.TrimSpace(f.Password) == "" {
+		f.Failures["Password"] = "Password is required"
+	} else if utf8.RuneCountInString(f.Password) < 8 {
+		f.Failures["Password"] = "Password cannot be less than 8 characters"
+	}
+
+	return len(f.Failures) == 0
+}

@@ -1,0 +1,34 @@
+{{template "base" .}}
+
+{{define "page-title"}}Signup{{end}}
+
+{{define "page-body"}}
+<form action='/user/signup' method='POST' novalidate>
+    {{with .Form}}
+    <div>
+        <label>Username:</label>
+        {{with .Failures.Username}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <input type='text' name='username' value='{{.Username}}'>
+    </div>
+    <div>
+        <label>Email:</label>
+        {{with .Failures.Email}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <input type='email' name='email' value='{{.Email}}'>
+    </div>
+    <div>
+        <label>Password:</label>
+        {{with .Failures.Password}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <input type='password' name='password'>
+    </div>
+    <div>
+        <input type='submit' value='Signup'>
+    </div>
+    {{end}}
+</form>
+{{end}}

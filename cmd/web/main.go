@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"encoding/gob"
 
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 
@@ -31,17 +32,21 @@ func main() {
 	// Initalize session manager
 	sessionStore = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
+	// Register user type for storing in sessions
+	gob.Register(&models.User{})
+
 	// Application instance
 	app := &App{
 		HTMLDir:   *htmlDir,
 		StaticDir: *staticDir,
-		Database:  &models.Database{db},
+		Request:  &models.RequestsDB{db},
+		User:  &models.UsersDB{db},
 		Sessions:  sessionStore,
 	}
 
 	//Start server, quit on failure
 	log.Printf("Starting server on %s", *addr)
-	err := http.ListenAndServe(*addr, LogRequest(SecureHeaders(app.Routes())))
+	err := http.ListenAndServe(*addr, app.Routes())
 	log.Fatal(err)
 }
 

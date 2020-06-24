@@ -14,6 +14,7 @@ import (
 type HTMLData struct {
 	Request  *models.Request
 	Requests []*models.Request
+	User     *models.User
 	Path     string
 	Form     interface{}
 	Flash    string
@@ -31,6 +32,11 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 
 	// Add the current path to the data
 	data.Path = r.URL.Path
+
+	// Check logged in status
+	user := &models.User{}
+	_, user = app.LoggedIn(r)
+	data.User = user
 
 	files := []string{
 		filepath.Join(app.HTMLDir, "base.html"),

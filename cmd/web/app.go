@@ -9,6 +9,7 @@ import (
 type App struct {
 	HTMLDir   string
 	StaticDir string
-	Database  *models.Database
+	Request  *models.RequestsDB
+	User	  *models.UsersDB
 	Sessions  *sessions.CookieStore
 }

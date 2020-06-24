@@ -15,3 +15,13 @@ type Request struct {
 
 // Requests holds multiple Requests
 type Requests []*Request
+
+// User hold data on a logged in user
+type User struct {
+	ID        int
+	Username  string
+	Email     string
+	HashedPassword []byte
+	Role      string
+	Created   time.Time
+}

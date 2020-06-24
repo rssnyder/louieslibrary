@@ -25,3 +25,16 @@ func SecureHeaders(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// RequireLogin redirects unatuhenticaed users
+func (app *App) RequireLogin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		loggedIn, _ := app.LoggedIn(r)
+		if !loggedIn {
+			http.Redirect(w, r, "/user/login", 302)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
