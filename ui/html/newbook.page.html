@@ -1,0 +1,49 @@
+{{define "page-title"}}Add a New Book{{end}}
+
+{{define "page-body"}}
+<form enctype="multipart/form-data" action="/write/book" method="POST">
+    {{with .Form}}
+    <div>
+        <label>ISBN:</label>
+        {{with .Failures.ISBN}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="text" name="isbn" value="{{.ISBN}}">
+    </div>
+    <div>
+        <label>Author:</label>
+        {{with .Failures.Author}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="text" name="author" value="{{.Author}}">
+    </div>
+    <div>
+        <label>Title:</label>
+        {{with .Failures.Title}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="text" name="title" value="{{.Title}}">
+    </div>
+    <div>
+        <label>Description:</label>
+        {{with .Failures.Description}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="text" name="description" value="{{.Description}}">
+    </div>
+    <div>
+        <label>Genre:</label>
+        {{with .Failures.Genre}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="text" name="genre" value="{{.Genre}}">
+    </div>
+    <div>
+        <input type="file" name="epub" />
+    </div>
+    <div>
+        <input type="submit" value="Publish book">
+    </div>
+    {{end}}
+</form>
+{{end}}

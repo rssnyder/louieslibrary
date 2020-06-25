@@ -15,6 +15,9 @@ type HTMLData struct {
 	Request  *models.Request
 	Requests []*models.Request
 	User     *models.User
+	Book     *models.Book
+	Books    []*models.Book
+	Reviews  []*models.Review
 	Path     string
 	Form     interface{}
 	Flash    string

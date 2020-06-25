@@ -3,13 +3,13 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>{{template "page-title" .}} - PlexRequests</title>
+		<title>{{template "page-title" .}} - Louie's Library</title>
 		<link rel="stylesheet" href="/static/css/main.css">
 		<link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
 	</head>
 	<body>
 		<header>
-			<h1><a href="/">PlexRequests</a></h1>
+			<h1><a href="/">Louie's Library</a></h1>
 		</header>
 		<nav>
 			<a href="/" {{if eq .Path "/"}}class="live"{{end}}>
@@ -18,6 +18,9 @@
 			{{if .User.ID}}
 			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
 				New request
+			</a>
+			<a href="/write/book" {{if eq .Path "/book/new"}}class="live"{{end}}>
+				New book
 			</a>
 			<a href="/user/logout">
 				Logout

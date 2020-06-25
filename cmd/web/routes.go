@@ -11,11 +11,26 @@ func (app *App) Routes() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", app.Home).Methods("GET")
 
+	// Requests
 	request := r.PathPrefix("/request").Subrouter()
 	request.HandleFunc("/new", app.NewRequest).Methods("GET")
 	request.HandleFunc("/new", app.CreateRequest).Methods("POST")
 	request.HandleFunc("/{id}", app.ShowRequest).Methods("GET")
 	request.Use(app.RequireLogin)
+
+	// Books for readers
+	book := r.PathPrefix("/book").Subrouter()
+	book.HandleFunc("/{id}", app.ShowBook).Methods("GET")
+	book.HandleFunc("/review", app.CreateReview).Methods("POST")
+	book.Use(app.RequireLogin)
+
+	writer := r.PathPrefix("/write").Subrouter()
+	writer.HandleFunc("/book", app.NewBook).Methods("GET")
+	writer.HandleFunc("/book", app.CreateBook).Methods("POST")
+	writer.Use(app.RequireWriter)
+
+	bookServer := http.FileServer(http.Dir(app.BookDir))
+	r.PathPrefix("/books/").Handler(http.StripPrefix("/books/", bookServer))
 
 	r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")
 	r.HandleFunc("/user/signup", app.CreateUser).Methods("POST")

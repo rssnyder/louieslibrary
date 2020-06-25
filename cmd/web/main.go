@@ -21,6 +21,7 @@ func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	htmlDir := flag.String("html-dir", "./ui/html", "Path to HTML templates")
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets")
+	bookDir := flag.String("book-dir", "./", "Path to book assets")
 	dsn := flag.String("dsn", "postgres://", "Postgres DSN")
 
 	flag.Parse()
@@ -39,8 +40,8 @@ func main() {
 	app := &App{
 		HTMLDir:   *htmlDir,
 		StaticDir: *staticDir,
-		Request:  &models.RequestsDB{db},
-		User:  &models.UsersDB{db},
+		BookDir:   *bookDir,
+		DB:        &models.DB{db},
 		Sessions:  sessionStore,
 	}
 

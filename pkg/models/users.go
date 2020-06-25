@@ -5,13 +5,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// UsersDB holds the db connection
-type UsersDB struct {
-	*sql.DB
-}
-
 // InsertUser creates a new user
-func (db *UsersDB) InsertUser(name, email, password string) error {
+func (db *DB) InsertUser(name, email, password string) error {
 
 	var userid int
 
@@ -31,7 +26,7 @@ func (db *UsersDB) InsertUser(name, email, password string) error {
 }
 
 // AuthenticateUser checks the valitity of a login request
-func (db *UsersDB) AuthenticateUser(email, password string) (*User, error) {
+func (db *DB) AuthenticateUser(email, password string) (*User, error) {
 
 	// Get id and password hash for given username
 	row := db.QueryRow("SELECT id, username, password, role FROM users WHERE username = $1", email)
@@ -57,6 +52,6 @@ func (db *UsersDB) AuthenticateUser(email, password string) (*User, error) {
 }
 
 // GetUser retrives user information
-func (db *UsersDB) GetUser(id int) (*User, error) {
+func (db *DB) GetUser(id int) (*User, error) {
 	return nil, nil
 }

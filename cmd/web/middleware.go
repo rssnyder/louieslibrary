@@ -38,3 +38,21 @@ func (app *App) RequireLogin(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// RequireWriter requires unatuhenticaed users
+func (app *App) RequireWriter(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		loggedIn, user := app.LoggedIn(r)
+		if !loggedIn {
+			http.Redirect(w, r, "/user/login", 302)
+			return
+		}
+
+		if user.Role != "writer" {
+			http.Redirect(w, r, "/", 302)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

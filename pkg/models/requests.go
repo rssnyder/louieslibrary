@@ -4,13 +4,8 @@ import (
 	"database/sql"
 )
 
-// RequestsDB holds the db connection
-type RequestsDB struct {
-	*sql.DB
-}
-
 // GetRequest retrives a request from the db
-func (db *RequestsDB) GetRequest(id int) (*Request, error) {
+func (db *DB) GetRequest(id int) (*Request, error) {
 	// Query statement
 	stmt := `SELECT id, requester, title, status, created FROM requests WHERE id = $1`
 
@@ -30,7 +25,7 @@ func (db *RequestsDB) GetRequest(id int) (*Request, error) {
 }
 
 // LatestRequests grabs the latest 10 valid request
-func (db *RequestsDB) LatestRequests() (Requests, error) {
+func (db *DB) LatestRequests() (Requests, error) {
 	// Query statement
 	stmt := `SELECT id, requester, title, status, created FROM requests ORDER BY created DESC LIMIT 10`
 
@@ -65,7 +60,7 @@ func (db *RequestsDB) LatestRequests() (Requests, error) {
 }
 
 // InsertRequest adds a new request to the db
-func (db *RequestsDB) InsertRequest(requester, title, source string) (int, error) {
+func (db *DB) InsertRequest(requester, title, source string) (int, error) {
 	// Save stored request
 	var requestid int
 

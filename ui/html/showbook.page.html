@@ -1,0 +1,75 @@
+{{define "page-title"}}Book #{{.Book.ID}}{{end}}
+
+{{define "page-body"}}
+    {{with .Flash}}
+    <div class="flash">{{.}}</div>
+    {{end}}
+    {{with .Book}}
+    <div class="book">
+        <div class="metadata">
+            <span>#{{.ID}}</span>
+            <strong>{{.ISBN}}</strong>
+        </div>
+        <pre><code>{{.Title}}</code></pre>
+        <div class="metadata">
+            <strong>{{.Author}}</strong>
+        </div>
+        <div class="metadata">
+            <time>{{.Description}}</time>
+        </div><br><br>
+        <div class="metadata">
+            <time>Uploaded by {{.Uploader}} on {{humanDate .Created}}</time>
+        </div>
+    </div>
+    <div>
+        <form action="/books/{{.Title}}%20-%20{{.Author}}.mobi" method="GET">
+            <div>
+                <input type="submit" value="Download book">
+            </div>
+        </form>
+    </div>
+    {{end}}
+    {{if .Reviews}}
+        {{range .Reviews}}
+            <div class="review">
+                <div class="metadata">
+                    <strong>{{.Username}}</strong>
+                </div>
+                <div class="metadata">{{.Rating}} Stars!</div>
+                <div class="metadata">{{.Review}}</div>
+                <div class="metadata">
+                    <time>{{humanDate .Created}}</time>
+                </div>
+            </div><br>
+        {{end}}
+    {{end}}
+    <br><br><br><br><form action="/book/review" method="POST">
+        <input type="hidden" id="bookid" name="bookid" value="{{.Book.ID}}">
+        <input type="hidden" id="username" name="username" value="{{.User.Username}}">
+        {{with .Form}}
+        <div>
+            {{with .Failures.BookID}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            {{with .Failures.Username}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            <label>Rating:</label>
+            {{with .Failures.Rating}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            <input type="text" name="rating" value="{{.Rating}}">
+        </div>
+        <div>
+            <label>Review:</label>
+            {{with .Failures.Review}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            <input type="text" name="review" value="{{.Review}}">
+        </div>
+        <div>
+            <input type="submit" value="Publish Review">
+        </div>
+        {{end}}
+    </form>
+{{end}}
