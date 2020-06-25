@@ -23,6 +23,9 @@ func main() {
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets")
 	bookDir := flag.String("book-dir", "./", "Path to book assets")
 	dsn := flag.String("dsn", "postgres://", "Postgres DSN")
+	tlsCert := flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
+	tlsKey := flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
+
 
 	flag.Parse()
 
@@ -47,7 +50,7 @@ func main() {
 
 	//Start server, quit on failure
 	log.Printf("Starting server on %s", *addr)
-	err := http.ListenAndServe(*addr, app.Routes())
+	err := http.ListenAndServeTLS(*addr, *tlsCert, *tlsKey, app.Routes())
 	log.Fatal(err)
 }
 

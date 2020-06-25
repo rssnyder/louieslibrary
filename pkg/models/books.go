@@ -70,7 +70,7 @@ func (db *DB) InsertBook(isbn, title, author, uploader, description, genre strin
 	var bookid int
 
 	// Query statement
-	stmt := `INSERT INTO books (isbn, title, author, uploader, description, genre, created) VALUES ($1, $2, $3, $4, $5, $6 timezone('utc', now())) RETURNING id`
+	stmt := `INSERT INTO books (isbn, title, author, uploader, description, genre, created) VALUES ($1, $2, $3, $4, $5, $6, timezone('utc', now())) RETURNING id`
 
 	err := db.QueryRow(stmt, isbn, title, author, uploader, description, genre).Scan(&bookid)
 	if err != nil {

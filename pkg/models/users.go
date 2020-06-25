@@ -15,7 +15,7 @@ func (db *DB) InsertUser(name, email, password string) error {
 		return err
 	}
 
-	stmt := `INSERT INTO users (username, email, password, role, created) VALUES($1, $2, $3, user, timezone('utc', now())) RETURNING id`
+	stmt := `INSERT INTO users (username, email, password, role, created) VALUES($1, $2, $3, 'reader', timezone('utc', now())) RETURNING id`
 
 	err = db.QueryRow(stmt, name, email, hashedPassword).Scan(&userid)
 	if err != nil {

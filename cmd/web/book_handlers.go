@@ -132,7 +132,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
     ioutil.WriteFile(fmt.Sprintf("assets/books/%s - %s.mobi", form.Author, form.Title), fileBytes, 0777)
 
 	// Insert the new book
-	id, err := app.DB.InsertBook(form.ISBN, form.Author, form.Uploader, form.Title, form.Description, form.Genre)
+	id, err := app.DB.InsertBook(form.ISBN, form.Title, form.Author, form.Uploader, form.Description, form.Genre)
 	if err != nil {
 		app.ServerError(w, err)
 		return
