@@ -129,7 +129,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
         return
     }
     // write this byte array to our temporary file
-    ioutil.WriteFile(fmt.Sprintf("assets/books/%s - %s.mobi", form.Author, form.Title), fileBytes, 0777)
+    ioutil.WriteFile(fmt.Sprintf("assets/books/%s - %s.mobi", form.Title, form.Author), fileBytes, 0777)
 
 	// Insert the new book
 	id, err := app.DB.InsertBook(form.ISBN, form.Title, form.Author, form.Uploader, form.Description, form.Genre)
@@ -205,4 +205,18 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.BookID), http.StatusSeeOther)
+}
+
+// ListAllBooks does what it says
+func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
+	// Get the books
+	books, err := app.DB.LatestBooks(1000)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	app.RenderHTML(w, r, "showbooks.page.html", &HTMLData{
+		Books:    books,
+	})
 }

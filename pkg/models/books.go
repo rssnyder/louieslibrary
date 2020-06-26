@@ -30,12 +30,12 @@ func (db *DB) GetBook(id int) (*Book, error) {
 }
 
 // LatestBooks grabs the latest 10 valid books
-func (db *DB) LatestBooks() (Books, error) {
+func (db *DB) LatestBooks(limit int) (Books, error) {
 	// Query statement
-	stmt := `SELECT id, isbn, title, author, description, genre, created FROM books ORDER BY created DESC LIMIT 10`
+	stmt := `SELECT id, isbn, title, author, description, genre, created FROM books ORDER BY created DESC LIMIT $1`
 
 	// Execute query
-	rows, err := db.Query(stmt)
+	rows, err := db.Query(stmt, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (db *DB) LatestBooks() (Books, error) {
 		b := &Book{}
 
 		// Pull data into request
-		err := rows.Scan(&b.ID, &b.ISBN, &b.Author, &b.Title, &b.Description, &b.Genre, &b.Created)
+		err := rows.Scan(&b.ID, &b.ISBN, &b.Title, &b.Author, &b.Description, &b.Genre, &b.Created)
 		if err != nil {
 			return nil, err
 		}

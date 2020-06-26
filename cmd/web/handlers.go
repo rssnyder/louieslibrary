@@ -20,7 +20,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the latest books
-	books, err := app.DB.LatestBooks()
+	books, err := app.DB.LatestBooks(10)
 	if err != nil {
 		app.ServerError(w, err)
 		return

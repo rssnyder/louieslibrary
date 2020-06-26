@@ -17,10 +17,13 @@
 			</a>
 			{{if .User.ID}}
 			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
-				New request
+				New Request
 			</a>
-			<a href="/write/book" {{if eq .Path "/book/new"}}class="live"{{end}}>
-				New book
+			<a href="/book/all" {{if eq .Path "/book/all"}}class="live"{{end}}>
+				Browse Books
+			</a>
+			<a href="/write/book" {{if eq .Path "/write/book"}}class="live"{{end}}>
+				New Book
 			</a>
 			<a href="/user/logout">
 				Logout

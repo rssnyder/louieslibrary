@@ -20,6 +20,7 @@ func (app *App) Routes() *mux.Router {
 
 	// Books for readers
 	book := r.PathPrefix("/book").Subrouter()
+	book.HandleFunc("/all", app.ListAllBooks).Methods("GET")
 	book.HandleFunc("/{id}", app.ShowBook).Methods("GET")
 	book.HandleFunc("/review", app.CreateReview).Methods("POST")
 	book.Use(app.RequireLogin)

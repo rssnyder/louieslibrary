@@ -10,10 +10,10 @@
             <span>#{{.ID}}</span>
             <strong>{{.ISBN}}</strong>
         </div>
-        <pre><code>{{.Title}}</code></pre>
         <div class="metadata">
-            <strong>{{.Author}}</strong>
+		<code>{{.Author}}</code>
         </div>
+	<pre><strong>{{.Title}}</strong> - {{.Genre}}</pre><br><br>
         <div class="metadata">
             <time>{{.Description}}</time>
         </div><br><br>
@@ -54,7 +54,7 @@
             {{with .Failures.Username}}
                 <label class="error">{{.}}</label>
             {{end}}
-            <label>Rating:</label>
+            <label>Rating(0-9):</label>
             {{with .Failures.Rating}}
                 <label class="error">{{.}}</label>
             {{end}}
