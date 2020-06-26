@@ -12,33 +12,32 @@ func (app *App) Routes() *mux.Router {
 	r.HandleFunc("/", app.Home).Methods("GET")
 
 	// Requests
-	request := r.PathPrefix("/request").Subrouter()
-	request.HandleFunc("/new", app.NewRequest).Methods("GET")
-	request.HandleFunc("/new", app.CreateRequest).Methods("POST")
-	request.HandleFunc("/{id}", app.ShowRequest).Methods("GET")
-	request.Use(app.RequireLogin)
+	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.NewRequest))).Methods("GET")
+	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.CreateRequest))).Methods("POST")
+	r.Handle("/request/{id}", app.RequireLogin(http.HandlerFunc(app.ShowRequest))).Methods("GET")
 
-	// Books for readers
-	book := r.PathPrefix("/book").Subrouter()
-	book.HandleFunc("/all", app.ListAllBooks).Methods("GET")
-	book.HandleFunc("/{id}", app.ShowBook).Methods("GET")
-	book.HandleFunc("/review", app.CreateReview).Methods("POST")
-	book.Use(app.RequireLogin)
+	// Fill requests
+	r.Handle("/request/{id}/fill", app.RequireWriter(http.HandlerFunc(app.FillRequest))).Methods("POST")
 
-	writer := r.PathPrefix("/write").Subrouter()
-	writer.HandleFunc("/book", app.NewBook).Methods("GET")
-	writer.HandleFunc("/book", app.CreateBook).Methods("POST")
-	writer.Use(app.RequireWriter)
+	// Books
+	r.Handle("/book/all", app.RequireLogin(http.HandlerFunc(app.ListAllBooks))).Methods("GET")
+	r.Handle("/book/{id}", app.RequireLogin(http.HandlerFunc(app.ShowBook))).Methods("GET")
+	r.Handle("/book/review", app.RequireLogin(http.HandlerFunc(app.CreateReview))).Methods("POST")
 
-	bookServer := http.FileServer(http.Dir(app.BookDir))
-	r.PathPrefix("/books/").Handler(http.StripPrefix("/books/", bookServer))
+	// Adding books
+	r.Handle("/write/book", app.RequireWriter(http.HandlerFunc(app.NewBook))).Methods("GET")
+	r.Handle("/write/book", app.RequireWriter(http.HandlerFunc(app.CreateBook))).Methods("POST")
 
+	// Unlock user methods
 	r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")
 	r.HandleFunc("/user/signup", app.CreateUser).Methods("POST")
-
 	r.HandleFunc("/user/login", app.LoginUser).Methods("GET")
 	r.HandleFunc("/user/login", app.VerifyUser).Methods("POST")
 	r.HandleFunc("/user/logout", app.LogoutUser).Methods("GET")
+
+	// Book files
+	bookServer := http.FileServer(http.Dir(app.BookDir))
+	r.PathPrefix("/books/").Handler(http.StripPrefix("/books/", bookServer))
 
 	// Fileserver for css and js files
 	fileServer := http.FileServer(http.Dir(app.StaticDir))

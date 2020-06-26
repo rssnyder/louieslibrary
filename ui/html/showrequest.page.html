@@ -19,4 +19,22 @@
         </div>
     </div>
     {{end}}
+    {{if eq .Request.Status "found"}}
+        <br><form action="/book/{{.Request.BookID}}">
+            <input type="submit" value="Go to book!" />
+        </form>
+    {{else}}{{if eq .User.Role "writer"}}
+    <br><br><br>
+    <div>
+        <form action="/request/{{.Request.ID}}/fill" method="POST">
+            <div>
+                <label>Book ID to Fill Request:</label>
+                <input type="text" name="bookid" value="">
+            </div>
+            <div>
+                <input type="submit" value="Fill Request">
+            </div>
+        </form>
+    </div>    
+    {{end}}{{end}}
 {{end}}

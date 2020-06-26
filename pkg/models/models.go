@@ -15,6 +15,7 @@ type Request struct {
 	Requester string
 	Title     string
 	Status    string
+	BookID    string
 	Created   time.Time
 }
 

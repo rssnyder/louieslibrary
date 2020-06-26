@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 	"github.com/gorilla/mux"
@@ -33,6 +34,8 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 		app.NotFound(w)
 		return
 	}
+
+	request.BookID = strings.TrimSpace(request.BookID)
 
 	// Get the previous flashes, if any.
 	if flashes := session.Flashes("default"); len(flashes) > 0 {
@@ -102,6 +105,42 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Save success message
 	session.AddFlash("Your request was saved successfully!", "default")
+
+	// Save session
+	err = session.Save(r, w)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
+}
+
+// FillRequest fills q request
+func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
+	// Load session
+	session, _ := app.Sessions.Get(r, "session-name")
+
+	// Get requested snippet id
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+
+	// Parse the post data
+	err = r.ParseForm()
+	if err != nil {
+		app.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Insert the new request
+	reply := app.DB.FillRequest(id, r.PostForm.Get("bookid"))
+	if reply == "" {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Save success message
+	session.AddFlash("Request filled!", "default")
 
 	// Save session
 	err = session.Save(r, w)
