@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"log"
 )
 
 // BooksDB holds the db connection
@@ -76,6 +77,8 @@ func (db *DB) InsertBook(isbn, title, author, uploader, description, genre strin
 	if err != nil {
 		return 0, err
 	}
+
+	log.Printf("New book %s uploaded by %s", title, uploader)
 
 	return bookid, nil
 }

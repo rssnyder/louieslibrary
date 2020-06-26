@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"log"
 )
 
 // GetRequest retrives a request from the db
@@ -71,6 +72,8 @@ func (db *DB) InsertRequest(requester, title, source string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	log.Printf("New request submitted by %s", requester)
 
 	return requestid, nil
 }

@@ -43,33 +43,24 @@
             </div><br>
         {{end}}
     {{end}}
-    <br><br><br><br><form action="/book/review" method="POST">
+    <br><br><br><br>
+    <form action="/book/review" method="POST">
         <input type="hidden" id="bookid" name="bookid" value="{{.Book.ID}}">
         <input type="hidden" id="username" name="username" value="{{.User.Username}}">
-        {{with .Form}}
         <div>
-            {{with .Failures.BookID}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            {{with .Failures.Username}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <label>Rating(0-9):</label>
-            {{with .Failures.Rating}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <input type="text" name="rating" value="{{.Rating}}">
+            Rating:
+            <input type="radio" name="rating" value="1"> 1
+            <input type="radio" name="rating" value="2"> 2
+            <input type="radio" name="rating" value="3"> 3
+            <input type="radio" name="rating" value="4"> 4
+            <input type="radio" name="rating" value="5"> 5
         </div>
         <div>
             <label>Review:</label>
-            {{with .Failures.Review}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <input type="text" name="review" value="{{.Review}}">
+            <input type="text" name="review" value="">
         </div>
         <div>
             <input type="submit" value="Publish Review">
         </div>
-        {{end}}
     </form>
 {{end}}

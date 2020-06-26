@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"log"
 )
 
 // GetBook retrives a book from the db
@@ -71,6 +72,8 @@ func (db *DB) InsertReview(bookid, username, rating, review string) (int, error)
 	if err != nil {
 		return 0, err
 	}
+
+	log.Printf("New review added by %s", username)
 
 	return reviewid, nil
 }

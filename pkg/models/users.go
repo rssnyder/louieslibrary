@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 // InsertUser creates a new user
@@ -22,14 +23,16 @@ func (db *DB) InsertUser(name, email, password string) error {
 		return err
 	}
 
+	log.Printf("User %s registered!", name)
+
 	return nil
 }
 
 // AuthenticateUser checks the valitity of a login request
-func (db *DB) AuthenticateUser(email, password string) (*User, error) {
+func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 
 	// Get id and password hash for given username
-	row := db.QueryRow("SELECT id, username, password, role FROM users WHERE username = $1", email)
+	row := db.QueryRow("SELECT id, username, password, role FROM users WHERE username = $1", username)
 
 	u := &User{}
 
@@ -47,6 +50,8 @@ func (db *DB) AuthenticateUser(email, password string) (*User, error) {
 	} else if err != nil {
 		return &User{}, err
 	}
+
+	log.Printf("User %s logged in", username)
 
 	return u, nil
 }
