@@ -18,7 +18,7 @@
             <time>{{.Description}}</time>
         </div><br><br>
         <div class="metadata">
-            <time>Uploaded by {{.Uploader}} on {{humanDate .Created}}</time>
+            <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
         </div>
     </div>
     <div>
@@ -33,7 +33,7 @@
         {{range .Reviews}}
             <div class="review">
                 <div class="metadata">
-                    <strong>{{.Username}}</strong>
+                    <strong><a href="/user/{{.Username}}">{{.Username}}</a></strong>
                 </div>
                 <div class="metadata">{{.Rating}} Stars!</div>
                 <div class="metadata">{{.Review}}</div>
