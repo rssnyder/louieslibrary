@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
+
+	"github.com/gorilla/mux"
 )
 
 // SignupUser presents a form to gather user information
@@ -143,4 +144,28 @@ func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// ShowUser
+func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
+	// Get requested user
+	vars := mux.Vars(r)
+	username := vars["username"]
+
+	user := &models.User{}
+	user, err := app.DB.GetUser(username)
+
+	if err != nil {
+		app.NotFound(w)
+		return
+	}
+
+	if user.ID == 0 {
+		app.NotFound(w)
+		return
+	}
+
+	app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
+		DisplayUser:   user,
+	})
 }

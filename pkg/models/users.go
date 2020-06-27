@@ -57,6 +57,20 @@ func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 }
 
 // GetUser retrives user information
-func (db *DB) GetUser(id int) (*User, error) {
-	return nil, nil
+func (db *DB) GetUser(username string) (*User, error) {
+	// Get attributes of user
+	row := db.QueryRow("SELECT id, username, role, created FROM users WHERE username = $1", username)
+
+	u := &User{}
+
+	err := row.Scan(&u.ID, &u.Username, &u.Role, &u.Created)
+	if err == sql.ErrNoRows {
+		return &User{}, nil
+	} else if err != nil {
+		return &User{}, err
+	}
+
+	log.Printf("Retrived data on user %s", username)
+
+	return u, nil
 }

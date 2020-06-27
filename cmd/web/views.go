@@ -15,6 +15,7 @@ type HTMLData struct {
 	Request  *models.Request
 	Requests []*models.Request
 	User     *models.User
+	DisplayUser *models.User
 	Book     *models.Book
 	Books    []*models.Book
 	Reviews  []*models.Review
