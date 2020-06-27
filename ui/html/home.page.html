@@ -1,41 +1,42 @@
-{{define "page-title"}}Home{{end}}
-
+{{define "page-title"}}
+  Home
+{{end}}
 {{define "page-body"}}
-    {{with .Flash}}
-        <div class="flash">{{.}}</div>
-    {{end}}
-    <h2>Latest Books</h2>
-    {{if .Books}}
+  {{with .Flash}}
+    <div class="flash">{{.}}</div>
+  {{end}}
+  <h2>Latest Books</h2>
+  {{if .Books}}
     <table>
+      <tr>
+        <th>Author</th>
+        <th>Title</th>
+        <th>ID</th>
+      </tr>
+      {{range .Books}}
         <tr>
-            <th>Author</th>
-            <th>Title</th>
-            <th>ID</th>
+          <td>{{.Author}}</td>
+          <td><a href="/book/{{.ID}}">{{.Title}}</a></td>
+          <td>{{.ID}}</td>
         </tr>
-        {{range .Books}}
-        <tr>
-            <td>{{.Author}}</td>
-            <td><a href="/book/{{.ID}}">{{.Title}}</a></td>
-            <td>{{.ID}}</td>
-        </tr>
-        {{end}}
+      {{end}}
     </table>
-    {{end}}
-    <br><br><h2>Latest Requests</h2>
-    {{if .Requests}}
+  {{end}}
+  <br><br><h2>Latest Requests</h2>
+  {{if .Requests}}
     <table>
+      <tr>
+        <th>Requester</th>
+        <th>Title</th>
+        <th>ID</th>
+      </tr>
+      {{range .Requests}}
         <tr>
-            <th>Requester</th>
-            <th>Title</th>
-            <th>ID</th>
+          <td>{{.Requester}}</td>
+          <td><a href="/request/{{.ID}}">{{.Title}}</a></td>
+          <td>{{.ID}}</td>
         </tr>
-        {{range .Requests}}
-        <tr>
-            <td>{{.Requester}}</td>
-            <td><a href="/request/{{.ID}}">{{.Title}}</a></td>
-            <td>{{.ID}}</td>
-        </tr>
-        {{end}}
+      {{end}}
     </table>
-    {{end}}
+  {{end}}
 {{end}}

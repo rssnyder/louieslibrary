@@ -1,40 +1,41 @@
-{{define "page-title"}}Request #{{.Request.ID}}{{end}}
-
+{{define "page-title"}}
+  Request #{{.Request.ID}}
+{{end}}
 {{define "page-body"}}
-    {{with .Flash}}
+  {{with .Flash}}
     <div class="flash">{{.}}</div>
-    {{end}}
-    {{with .Request}}
+  {{end}}
+  {{with .Request}}
     <div class="request">
-        <div class="metadata">
-            <span>#{{.ID}}</span>
-            <strong>{{.Status}}</strong>
-        </div>
-        <div class="metadata">
-            <strong><a href="/user/{{.Requester}}">{{.Requester}}</a></strong>
-        </div>
-        <pre><code>{{.Title}}</code></pre>
-        <div class="metadata">
-            <time>Requested: {{humanDate .Created}}</time>
-        </div>
+      <div class="metadata">
+        <span>#{{.ID}}</span>
+        <strong>{{.Status}}</strong>
+      </div>
+      <div class="metadata">
+        <strong><a href="/user/{{.Requester}}">{{.Requester}}</a></strong>
+      </div>
+      <pre><code>{{.Title}}</code></pre>
+      <div class="metadata">
+        <time>Requested: {{humanDate .Created}}</time>
+      </div>
     </div>
-    {{end}}
-    {{if eq .Request.Status "found"}}
-        <br><form action="/book/{{.Request.BookID}}">
-            <input type="submit" value="Go to book!" />
-        </form>
-    {{else}}{{if eq .User.Role "writer"}}
+  {{end}}
+  {{if eq .Request.Status "found"}}
+    <br><form action="/book/{{.Request.BookID}}">
+      <input type="submit" value="Go to book!" />
+    </form>
+  {{else}}{{if eq .User.Role "writer"}}
     <br><br><br>
     <div>
-        <form action="/request/{{.Request.ID}}/fill" method="POST">
-            <div>
-                <label>Book ID to Fill Request:</label>
-                <input type="text" name="bookid" value="">
-            </div>
-            <div>
-                <input type="submit" value="Fill Request">
-            </div>
-        </form>
+      <form action="/request/{{.Request.ID}}/fill" method="POST">
+        <div>
+          <label>Book ID to Fill Request:</label>
+          <input type="text" name="bookid" value="">
+        </div>
+        <div>
+          <input type="submit" value="Fill Request">
+        </div>
+      </form>
     </div>    
-    {{end}}{{end}}
+  {{end}}{{end}}
 {{end}}

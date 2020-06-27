@@ -1,23 +1,24 @@
-{{define "page-title"}}Home{{end}}
-
+{{define "page-title"}}
+  Browse Books
+{{end}}
 {{define "page-body"}}
-    {{with .Flash}}
-        <div class="flash">{{.}}</div>
-    {{end}}
-    {{if .Books}}
+  {{with .Flash}}
+    <div class="flash">{{.}}</div>
+  {{end}}
+  {{if .Books}}
     <table>
+      <tr>
+        <th>Author</th>
+        <th>Title</th>
+        <th>ID</th>
+      </tr>
+      {{range .Books}}
         <tr>
-            <th>Author</th>
-            <th>Title</th>
-            <th>ID</th>
+          <td>{{.Author}}</td>
+          <td><a href="/book/{{.ID}}">{{.Title}}</a></td>
+          <td>{{.ID}}</td>
         </tr>
-        {{range .Books}}
-        <tr>
-            <td>{{.Author}}</td>
-            <td><a href="/book/{{.ID}}">{{.Title}}</a></td>
-            <td>{{.ID}}</td>
-        </tr>
-        {{end}}
+      {{end}}
     </table>
-    {{end}}
+  {{end}}
 {{end}}

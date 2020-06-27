@@ -1,25 +1,19 @@
-{{define "page-title"}}Add a New Request{{end}}
-
+{{define "page-title"}}
+  New Request
+{{end}}
 {{define "page-body"}}
-<form action="/request/new" method="POST">
+  <form action="/request/new" method="POST">
     {{with .Form}}
-    <!-- <div>
-        <label>Requester:</label>
-        {{with .Failures.Requester}}
-            <label class="error">{{.}}</label>
-        {{end}}
-        <input type="text" name="requester" value="{{.Requester}}">
-    </div> -->
-    <div>
+      <div>
         <label>Information (Title, Author, IBSN):</label>
         {{with .Failures.Title}}
-            <label class="error">{{.}}</label>
+          <label class="error">{{.}}</label>
         {{end}}
         <textarea name="title">{{.Title}}</textarea>
-    </div>
-    <div>
+      </div>
+      <div>
         <input type="submit" value="Publish request">
-    </div>
+      </div>
     {{end}}
-</form>
+  </form>
 {{end}}

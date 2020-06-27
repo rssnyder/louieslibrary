@@ -1,23 +1,24 @@
-{{define "page-title"}}Home{{end}}
-
+{{define "page-title"}}
+  User
+{{end}}
 {{define "page-body"}}
     {{with .Flash}}
         <div class="flash">{{.}}</div>
     {{end}}
     {{with .DisplayUser}}
-    <table>
+      <table>
         <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Joined</th>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Joined</th>
         </tr>
         <tr>
-            <td>{{.ID}}</td>
-            <td>{{.Username}}</td>
-            <td>{{.Role}}</td>
-            <td>{{humanDate .Created}}</td>
+          <td>{{.ID}}</td>
+          <td>{{.Username}}</td>
+          <td>{{.Role}}</td>
+          <td>{{humanDate .Created}}</td>
         </tr>
-    </table>
+      </table>
     {{end}}
 {{end}}

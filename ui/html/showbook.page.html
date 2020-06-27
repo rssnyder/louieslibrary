@@ -1,25 +1,27 @@
-{{define "page-title"}}Book #{{.Book.ID}}{{end}}
-
+{{define "page-title"}}
+  Book #{{.Book.ID}}
+{{end}}
 {{define "page-body"}}
-    {{with .Flash}}
+  {{with .Flash}}
     <div class="flash">{{.}}</div>
-    {{end}}
-    {{with .Book}}
+  {{end}}
+  {{with .Book}}
     <div class="book">
-        <div class="metadata">
-            <span>#{{.ID}}</span>
-            <strong>{{.ISBN}}</strong>
-        </div>
-        <div class="metadata">
-		<code>{{.Author}}</code>
-        </div>
-	<pre><strong>{{.Title}}</strong> - {{.Genre}}</pre><br><br>
-        <div class="metadata">
-            <time>{{.Description}}</time>
-        </div><br><br>
-        <div class="metadata">
-            <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
-        </div>
+      <div class="metadata">
+        <span>#{{.ID}}</span><strong>{{.ISBN}}</strong>
+      </div>
+      <div class="metadata">
+        <code>{{.Author}}</code>
+      </div>
+      <div class="metadata">
+        <pre><strong>{{.Title}}</strong> - {{.Genre}}</pre><br><br>
+      </div>
+      <div class="metadata">
+          <time>{{.Description}}</time>
+      </div><br><br>
+      <div class="metadata">
+          <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
+      </div>
     </div>
     <div>
         <form action="/books/{{.Title}}%20-%20{{.Author}}.mobi" method="GET">
@@ -28,39 +30,43 @@
             </div>
         </form>
     </div>
+  {{end}}
+  {{if .Reviews}}
+    {{range .Reviews}}
+      <div class="review">
+        <div class="metadata">
+          <strong><a href="/user/{{.Username}}">{{.Username}}</a></strong>
+        </div>
+        <div class="metadata">
+          {{.Rating}} Stars!
+        </div>
+        <div class="metadata">
+          {{.Review}}
+        </div>
+        <div class="metadata">
+          <time>{{humanDate .Created}}</time>
+        </div>
+      </div><br>
     {{end}}
-    {{if .Reviews}}
-        {{range .Reviews}}
-            <div class="review">
-                <div class="metadata">
-                    <strong><a href="/user/{{.Username}}">{{.Username}}</a></strong>
-                </div>
-                <div class="metadata">{{.Rating}} Stars!</div>
-                <div class="metadata">{{.Review}}</div>
-                <div class="metadata">
-                    <time>{{humanDate .Created}}</time>
-                </div>
-            </div><br>
-        {{end}}
-    {{end}}
-    <br><br><br><br>
-    <form action="/book/review" method="POST">
-        <input type="hidden" id="bookid" name="bookid" value="{{.Book.ID}}">
-        <input type="hidden" id="username" name="username" value="{{.User.Username}}">
-        <div>
-            Rating:
-            <input type="radio" name="rating" value="1"> 1
-            <input type="radio" name="rating" value="2"> 2
-            <input type="radio" name="rating" value="3"> 3
-            <input type="radio" name="rating" value="4"> 4
-            <input type="radio" name="rating" value="5"> 5
-        </div>
-        <div>
-            <label>Review:</label>
-            <input type="text" name="review" value="">
-        </div>
-        <div>
-            <input type="submit" value="Publish Review">
-        </div>
-    </form>
+  {{end}}
+  <br><br><br><br>
+  <form action="/book/review" method="POST">
+    <input type="hidden" id="bookid" name="bookid" value="{{.Book.ID}}">
+    <input type="hidden" id="username" name="username" value="{{.User.Username}}">
+    <div>
+      Rating:
+      <input type="radio" name="rating" value="1"> 1
+      <input type="radio" name="rating" value="2"> 2
+      <input type="radio" name="rating" value="3"> 3
+      <input type="radio" name="rating" value="4"> 4
+      <input type="radio" name="rating" value="5"> 5
+    </div>
+    <div>
+      <label>Review:</label>
+      <input type="text" name="review" value="">
+    </div>
+    <div>
+      <input type="submit" value="Publish Review">
+    </div>
+  </form>
 {{end}}
