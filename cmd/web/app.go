@@ -10,6 +10,7 @@ type App struct {
 	HTMLDir   string
 	StaticDir string
 	BookDir   string
+	YoutubeDir string
 	DB        *models.DB
 	Sessions  *sessions.CookieStore
 }

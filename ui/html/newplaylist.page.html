@@ -1,0 +1,16 @@
+{{define "page-title"}}
+  New Playlist
+{{end}}
+{{define "page-body"}}
+  <form action="/youtube/playlist" method="POST">
+    {{with .Form}}
+      <div>
+        <label>Playlist URL:</label>
+        <input type="text" name="playlisturl" value="">
+      </div>
+      <div>
+        <input type="submit" value="Submit Playlist">
+      </div>
+      {{end}}
+  </form>
+{{end}}

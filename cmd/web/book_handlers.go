@@ -129,7 +129,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
         return
     }
     // write this byte array to our temporary file
-    ioutil.WriteFile(fmt.Sprintf("assets/books/%s - %s.mobi", form.Title, form.Author), fileBytes, 0777)
+    ioutil.WriteFile(fmt.Sprintf("%s/%s - %s.mobi", app.BookDir, form.Title, form.Author), fileBytes, 0777)
 
 	// Insert the new book
 	id, err := app.DB.InsertBook(form.ISBN, form.Title, form.Author, form.Uploader, form.Description, form.Genre)
