@@ -29,8 +29,8 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/write/book", app.RequireWriter(http.HandlerFunc(app.CreateBook))).Methods("POST")
 
 	// Youtube
-	r.Handle("/youtube/playlist", app.RequireWriter(http.HandlerFunc(app.NewPlaylist))).Methods("GET")
-	r.Handle("/youtube/playlist", app.RequireWriter(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")
+	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.NewPlaylist))).Methods("GET")
+	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")
 
 	// Unlock user methods
 	r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")

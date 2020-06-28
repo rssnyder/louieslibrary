@@ -25,9 +25,11 @@
 			<a href="/youtube/playlist" {{if eq .Path "/youtube/playlist"}}class="live"{{end}}>
 				Download Playlist
 			</a>
-			<a href="/write/book" {{if eq .Path "/write/book"}}class="live"{{end}}>
-				New Book
-			</a>
+			{{if eq .User.Role "writer"}}
+				<a href="/write/book" {{if eq .Path "/write/book"}}class="live"{{end}}>
+					New Book
+				</a>
+			{{end}}
 			<a href="/user/logout">
 				Logout
 			</a>
