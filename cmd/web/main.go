@@ -21,7 +21,8 @@ func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	htmlDir := flag.String("html-dir", "./ui/html", "Path to HTML templates")
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets")
-	bookDir := flag.String("book-dir", "./", "Path to book assets")
+	bookDir := flag.String("book-dir", "./assets/books", "Path to book assets")
+	youtubeDir := flag.String("yt-dir", "./assets/youtube", "Path to youtube assets")
 	dsn := flag.String("dsn", "postgres://", "Postgres DSN")
 	tlsCert := flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
 	tlsKey := flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
@@ -44,6 +45,7 @@ func main() {
 		HTMLDir:   *htmlDir,
 		StaticDir: *staticDir,
 		BookDir:   *bookDir,
+		YoutubeDir: *youtubeDir,
 		DB:        &models.DB{db},
 		Sessions:  sessionStore,
 	}
