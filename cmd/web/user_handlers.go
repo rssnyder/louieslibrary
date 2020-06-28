@@ -126,7 +126,7 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/request/new", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // LogoutUser
@@ -165,7 +165,15 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get Reviews
+	reviews, err := app.DB.UserLatestReviews(username, 50)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
 	app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
 		DisplayUser:   user,
+		Reviews: reviews,
 	})
 }

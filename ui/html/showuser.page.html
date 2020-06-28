@@ -21,4 +21,23 @@
         </tr>
       </table>
     {{end}}
+    {{if .Reviews}}
+    {{range .Reviews}}
+      <br><br>
+      <div class="review">
+        <div class="metadata">
+          <strong><a href="/book/{{.BookID}}">{{.Username}}</a></strong>
+        </div>
+        <div class="metadata">
+          {{.Rating}} Stars!
+        </div>
+        <div class="metadata">
+          {{.Review}}
+        </div>
+        <div class="metadata">
+          <time>{{humanDate .Created}}</time>
+        </div>
+      </div><br>
+    {{end}}
+  {{end}}
 {{end}}

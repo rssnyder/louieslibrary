@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-// GetBook retrives a book from the db
+// GetReview retrives a review from the db
 func (db *DB) GetReview(bookid int) (*Review, error) {
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1`
@@ -26,12 +26,12 @@ func (db *DB) GetReview(bookid int) (*Review, error) {
 }
 
 // LatestBooks grabs the latest 10 valid books
-func (db *DB) LatestReviews(bookid int) (Reviews, error) {
+func (db *DB) LatestReviews(bookid, limit int) (Reviews, error) {
 	// Query statement
-	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT 10`
+	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT $2`
 
 	// Execute query
-	rows, err := db.Query(stmt, bookid)
+	rows, err := db.Query(stmt, bookid, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +46,42 @@ func (db *DB) LatestReviews(bookid int) (Reviews, error) {
 
 		// Pull data into request
 		err := rows.Scan(&r.BookID, &r.Username, &r.Rating, &r.Review, &r.Created)
+		if err != nil {
+			return nil, err
+		}
+
+		reviews = append(reviews, r)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reviews, nil
+}
+
+// UserLatestReviews grabs the latest 10 valid books
+func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
+	// Query statement
+	stmt := `SELECT r.bookid id, r.rating, r.review, r.created, b.title FROM reviews r 
+	INNER JOIN books b ON CAST(r.bookid as INTEGER) = b.id AND r.username = $1 ORDER BY created DESC LIMIT $2`
+
+	// Execute query
+	rows, err := db.Query(stmt, username, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	reviews := Reviews{}
+
+	// Get all the matching requets
+	for rows.Next() {
+		r := &Review{}
+
+		// Pull data into request
+		err := rows.Scan(&r.BookID, &r.Rating, &r.Review, &r.Created, &r.Username)
 		if err != nil {
 			return nil, err
 		}

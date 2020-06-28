@@ -37,7 +37,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get Reviews
-	reviews, err := app.DB.LatestReviews(id)
+	reviews, err := app.DB.LatestReviews(id, 50)
 	if err != nil {
 		app.ServerError(w, err)
 		return

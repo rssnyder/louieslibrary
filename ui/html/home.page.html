@@ -28,13 +28,13 @@
       <tr>
         <th>Requester</th>
         <th>Title</th>
-        <th>ID</th>
+        <th>Status</th>
       </tr>
       {{range .Requests}}
         <tr>
           <td>{{.Requester}}</td>
           <td><a href="/request/{{.ID}}">{{.Title}}</a></td>
-          <td>{{.ID}}</td>
+          <td>{{.Status}}</td>
         </tr>
       {{end}}
     </table>
