@@ -23,6 +23,7 @@ func (app *App) Routes() *mux.Router {
 	// Books
 	r.Handle("/book/all", app.RequireLogin(http.HandlerFunc(app.ListAllBooks))).Methods("GET")
 	r.Handle("/book/{id}", app.RequireLogin(http.HandlerFunc(app.ShowBook))).Methods("GET")
+	r.Handle("/book/{id}", app.RequireLogin(http.HandlerFunc(app.DownloadBook))).Methods("POST")
 	r.Handle("/book/review", app.RequireLogin(http.HandlerFunc(app.CreateReview))).Methods("POST")
 
 	// Adding books
@@ -40,10 +41,6 @@ func (app *App) Routes() *mux.Router {
 	r.HandleFunc("/user/login", app.VerifyUser).Methods("POST")
 	r.HandleFunc("/user/logout", app.LogoutUser).Methods("GET")
 	r.Handle("/user/{username}", app.RequireLogin(http.HandlerFunc(app.ShowUser))).Methods("GET")
-
-	// Book files
-	bookServer := http.FileServer(http.Dir(app.BookDir))
-	r.PathPrefix("/books/").Handler(http.StripPrefix("/books/", bookServer))
 
 	// Youtube files
 	ytServer := http.FileServer(http.Dir(app.YoutubeDir))

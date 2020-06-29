@@ -42,7 +42,6 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		app.ServerError(w, err)
 		return
 	}
-	
 
 	// Get the previous flashes, if any.
 	if flashes := session.Flashes("default"); len(flashes) > 0 {
@@ -69,6 +68,25 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
+	// Get requested book id
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+
+	// Get book
+	book, err := app.DB.GetBook(id)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+	if book == nil {
+		app.NotFound(w)
+		return
+	}
+
+	// Server book file
+	app.ServeFile(w, "library", fmt.Sprintf("%s.mobi", book.ISBN), fmt.Sprintf("%s - %s.mobi", book.Title, book.Author))
+}
 
 // NewBook displays the new book upload form
 func (app *App) NewBook(w http.ResponseWriter, r *http.Request) {
@@ -103,33 +121,31 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FormFile returns the first file for the given key `myFile`
-    // it also returns the FileHeader so we can get the Filename,
-    // the Header and the size of the file
-    file, handler, err := r.FormFile("epub")
-    if err != nil {
+	// Get book file from form
+	file, _, err := r.FormFile("epub")
+	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
 		form.Upload = false
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
-        return
-    }
+		return
+	}
 	defer file.Close()
-	
-    log.Printf("Uploaded File - %+v\n", handler.Filename)
-    log.Printf("File Size - %+v\n", handler.Size)
-    log.Printf("MIME Header - %+v\n", handler.Header)
 
-    // read all of the contents of our uploaded file into a
-    // byte array
-    fileBytes, err := ioutil.ReadAll(file)
-    if err != nil {
+	// read all of the contents of our uploaded file into a
+	// byte array
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
 		form.Upload = false
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
-        return
-    }
-    // write this byte array to our temporary file
-    ioutil.WriteFile(fmt.Sprintf("%s/%s - %s.mobi", app.BookDir, form.Title, form.Author), fileBytes, 0777)
+		return
+	}
+
+	// Send book to storage server
+	err = app.UploadBytes("library", fmt.Sprintf("%s.mobi", form.ISBN), fileBytes)
+	if err != nil {
+		app.ServerError(w, err)
+	}
 
 	// Insert the new book
 	id, err := app.DB.InsertBook(form.ISBN, form.Title, form.Author, form.Uploader, form.Description, form.Genre)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"os"
+	"log"
 )
 
 // NewPlaylist displays the new playlist form
@@ -39,9 +40,14 @@ func (app *App) DownloadPlaylist(w http.ResponseWriter, r *http.Request) {
 		app.ServerError(w, err)
 	}
 
-	_, err = ZipDirectory(savedir)
+	full_path, err := ZipDirectory(savedir)
 	if err != nil {
 		app.ServerError(w, err)
+	}
+
+	err = app.UploadFile("youtube", fmt.Sprintf("playlists/%s.zip", uuid), full_path)
+	if err != nil {
+		log.Printf("Unable to send playlist zip to storage %s", err.Error())
 	}
 		
 	http.Redirect(w, r, fmt.Sprintf("/youtube/%s.zip", uuid), http.StatusSeeOther)
