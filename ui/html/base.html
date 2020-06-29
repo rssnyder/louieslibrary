@@ -16,33 +16,40 @@
 				Home
 			</a>
 			{{if .User.ID}}
+				<a href="/book/all" {{if eq .Path "/book/all"}}class="live"{{end}}>
+					Browse Books
+				</a>
+				<a href="/request/all" {{if eq .Path "/request/all"}}class="live"{{end}}>
+					Browse Requests
+				</a>
+				<a href="/user/logout">
+					Logout
+				</a>
+				<a href="/user/{{.User.Username}}">
+					{{.User.Username}}
+				</a>
+			{{else}}
+				<a href="/user/login" {{if eq .Path "/user/login"}}class="live"{{end}}>
+					Login
+				</a>
+				<a href="/user/signup" {{if eq .Path "/user/signup"}}class="live"{{end}}>
+					Signup
+				</a>
+			{{end}}
+		</nav>
+		<nav>
+			{{if .User.ID}}
 			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
 				New Request
-			</a>
-			<a href="/book/all" {{if eq .Path "/book/all"}}class="live"{{end}}>
-				Browse Books
 			</a>
 			<a href="/youtube/playlist" {{if eq .Path "/youtube/playlist"}}class="live"{{end}}>
 				Download Playlist
 			</a>
-			{{if eq .User.Role "writer"}}
-				<a href="/write/book" {{if eq .Path "/write/book"}}class="live"{{end}}>
-					New Book
-				</a>
-			{{end}}
-			<a href="/user/logout">
-				Logout
-			</a>
-			<a href="/user/{{.User.Username}}">
-				{{.User.Username}}
-			</a>
-			{{else}}
-			<a href="/user/login" {{if eq .Path "/user/login"}}class="live"{{end}}>
-				Login
-			</a>
-			<a href="/user/signup" {{if eq .Path "/user/signup"}}class="live"{{end}}>
-				Signup
-			</a>
+				{{if eq .User.Role "writer"}}
+					<a href="/write/book" {{if eq .Path "/write/book"}}class="live"{{end}}>
+						New Book
+					</a>
+				{{end}}
 			{{end}}
 		</nav>
 		<section>

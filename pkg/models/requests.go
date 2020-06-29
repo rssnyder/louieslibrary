@@ -28,12 +28,12 @@ func (db *DB) GetRequest(id int) (*Request, error) {
 }
 
 // LatestRequests grabs the latest 10 valid request
-func (db *DB) LatestRequests() (Requests, error) {
+func (db *DB) LatestRequests(limit int) (Requests, error) {
 	// Query statement
-	stmt := `SELECT id, requester, title, status, created FROM requests ORDER BY created DESC LIMIT 10`
+	stmt := `SELECT id, requester, title, status, created FROM requests ORDER BY created DESC LIMIT $1`
 
 	// Execute query
-	rows, err := db.Query(stmt)
+	rows, err := db.Query(stmt, limit)
 	if err != nil {
 		return nil, err
 	}

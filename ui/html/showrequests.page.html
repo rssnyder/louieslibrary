@@ -1,0 +1,24 @@
+{{define "page-title"}}
+  Browse Requests
+{{end}}
+{{define "page-body"}}
+  {{with .Flash}}
+    <div class="flash">{{.}}</div>
+  {{end}}
+  {{if .Requests}}
+    <table>
+      <tr>
+        <th>Requester</th>
+        <th>Title</th>
+        <th>Status</th>
+      </tr>
+      {{range .Requests}}
+        <tr>
+          <td>{{.Requester}}</td>
+          <td><a href="/request/{{.ID}}">{{.Title}}</a></td>
+          <td>{{.Status}}</td>
+        </tr>
+      {{end}}
+    </table>
+  {{end}}
+{{end}}

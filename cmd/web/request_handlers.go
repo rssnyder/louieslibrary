@@ -151,3 +151,17 @@ func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
 }
+
+// ListAllRequests does what it says
+func (app *App) ListAllRequests(w http.ResponseWriter, r *http.Request) {
+	// Get the requests
+	requests, err := app.DB.LatestRequests(1000)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	app.RenderHTML(w, r, "showrequests.page.html", &HTMLData{
+		Requests:    requests,
+	})
+}

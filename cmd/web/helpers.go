@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"errors"
 	"net/http"
-	"log"
 	"io/ioutil"
 	"archive/zip"
 	"os"
+	"crypto/rand"
 
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 )
@@ -39,45 +40,59 @@ func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
 	return true, user
 }
 
-func ZipDirectory(dirPath string) string {
+func ZipDirectory(dirPath string) (string, error) {
+	var output string
+
 	// Get a Buffer to Write To
 	outFile, err := os.Create(dirPath + ".zip")
 	if err != nil {
-			fmt.Println(err)
+			return output, err
 	}
 	defer outFile.Close()
 
 	// Create a new zip archive.
 	writer := zip.NewWriter(outFile)
 
+	// Add all file sin directory to zip
 	files, err := ioutil.ReadDir(dirPath)
 	for _, file := range files {
 		fullPath := dirPath + "/" + file.Name()
-		log.Printf("reading file %s to zip", fullPath)
 		dat, err := ioutil.ReadFile(fullPath)
 		if err != nil {
-			log.Printf("failed reading file %s to zip, %s", fullPath, err)
-			return ""
+			return output, err
 		}
 
 		// Add some files to the archive.
 		f, err := writer.Create(file.Name())
 		if err != nil {
-			log.Printf("failed creating file %s in zip, %s", fullPath, err)
-			return ""
+			return output, err
 		}
 		_, err = f.Write(dat)
 		if err != nil {
-			log.Printf("failed writing file %s in zip, %s", fullPath, err)
-			return ""
+			return output, err
 		}
 	}
 
 	err = writer.Close()
 	if err != nil {
-		log.Printf("failed closing zip writer %s, %s", dirPath, err)
-		return ""
+		return output, err
 	}
 
-	return dirPath + ".zip"
+	return dirPath + ".zip", nil
+}
+
+func CreateUUID() (string, error) {
+	var uuid string
+
+	// Create UUId
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return uuid, errors.New("Unable to generate UUID")
+	}
+
+	uuid = fmt.Sprintf("%x-%x-%x-%x-%x",
+			b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+
+	return uuid, nil
 }

@@ -12,6 +12,7 @@ func (app *App) Routes() *mux.Router {
 	r.HandleFunc("/", app.Home).Methods("GET")
 
 	// Requests
+	r.Handle("/request/all", app.RequireLogin(http.HandlerFunc(app.ListAllRequests))).Methods("GET")
 	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.NewRequest))).Methods("GET")
 	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.CreateRequest))).Methods("POST")
 	r.Handle("/request/{id}", app.RequireLogin(http.HandlerFunc(app.ShowRequest))).Methods("GET")

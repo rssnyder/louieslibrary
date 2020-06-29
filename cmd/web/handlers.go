@@ -13,7 +13,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the latest requests
-	requests, err := app.DB.LatestRequests()
+	requests, err := app.DB.LatestRequests(5)
 	if err != nil {
 		app.ServerError(w, err)
 		return
