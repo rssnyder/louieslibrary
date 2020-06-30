@@ -40,6 +40,7 @@ func (app *App) Routes() *mux.Router {
 	r.HandleFunc("/user/login", app.LoginUser).Methods("GET")
 	r.HandleFunc("/user/login", app.VerifyUser).Methods("POST")
 	r.HandleFunc("/user/logout", app.LogoutUser).Methods("GET")
+	r.Handle("/user/invite/create", app.RequireLogin(http.HandlerFunc(app.CreateInviteCode))).Methods("POST")
 	r.Handle("/user/{username}", app.RequireLogin(http.HandlerFunc(app.ShowUser))).Methods("GET")
 
 	// Youtube files

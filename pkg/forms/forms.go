@@ -8,7 +8,7 @@ import (
 
 // NewRequest models the request structure
 type NewRequest struct {
-	Requester string
+	Requester	string
 	Title     string
 	Failures  map[string]string
 }
@@ -37,10 +37,11 @@ func (f *NewRequest) Valid() bool {
 
 // NewUser models the user signup
 type NewUser struct {
-	Username string
-	Email    string
-	Password string
-	Failures map[string]string
+	Username 		string
+	Email    		string
+	Password 		string
+	InviteCode	string
+	Failures 		map[string]string
 }
 
 // Valid makes sure the the fields are correctly formatted
@@ -60,6 +61,15 @@ func (f *NewUser) Valid() bool {
 	if strings.TrimSpace(f.Email) == "" {
 		f.Failures["Email"] = "Email is required"
 		log.Printf("User submitted with email missing")
+	}
+
+	// Check for non-empty invite code
+	if strings.TrimSpace(f.InviteCode) == "" {
+		f.Failures["InviteCode"] = "InviteCode is required"
+		log.Printf("User submitted with InviteCode missing")
+	} else if utf8.RuneCountInString(f.InviteCode) > 36 {
+		f.Failures["InviteCode"] = "InviteCode cannot be more than 36 characters"
+		log.Printf("User submitted with InviteCode over limit")
 	}
 
 	// Check for non-empty password
@@ -82,8 +92,8 @@ type NewBook struct {
 	Author      string
 	Genre       string
 	Description string
-	Upload		bool
-	Uploader string
+	Upload			bool
+	Uploader 		string
 	Failures    map[string]string
 }
 

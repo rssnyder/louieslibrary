@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 	"database/sql"
+	"gopkg.in/guregu/null.v4"
 )
 
 type DB struct {
@@ -31,6 +32,19 @@ type User struct {
 	Role      string
 	Created   time.Time
 }
+
+// Invite holds invite codes
+type Invite struct {
+	ID					string
+	Username 		null.String
+	Code    		string
+	Creator			string
+	Activated		string
+	Created   	time.Time
+}
+
+// Invites holds a users invites
+type Invites []*Invite
 
 // Book holds data on a book
 type Book struct {

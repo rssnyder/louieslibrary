@@ -32,6 +32,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	form := &forms.NewUser{
 		Username: r.PostForm.Get("username"),
 		Email:    r.PostForm.Get("email"),
+		InviteCode: r.PostForm.Get("invitecode"),
 		Password: r.PostForm.Get("password"),
 	}
 
@@ -41,8 +42,38 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate request
+	used, err := app.DB.ValidateInvite(form.InviteCode)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+	if used {
+		// Save failure message
+		session.AddFlash("Invalid invite code.", "default")
+
+		// Save session
+		err = session.Save(r, w)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+
+	fmt.Printf("%s", used)
+
 	// Insert the new user
 	err = app.DB.InsertUser(form.Username, form.Email, form.Password)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	// Fill invite
+	err = app.DB.FillInvite(form.Username, form.InviteCode)
 	if err != nil {
 		app.ServerError(w, err)
 		return
@@ -172,8 +203,44 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
-		DisplayUser:   user,
-		Reviews: reviews,
-	})
+	_, current_user := app.LoggedIn(r)
+
+	if username == current_user.Username {
+		invites, err := app.DB.GetInvites(username)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
+			DisplayUser:   user,
+			Invites: invites,
+			Reviews: reviews,
+		})
+	} else {
+		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
+			DisplayUser:   user,
+			Reviews: reviews,
+		})
+	}
+}
+
+func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
+	// Get user info
+	user := &models.User{}
+	_, user = app.LoggedIn(r)
+
+	// Generate invite code
+	code, err := CreateUUID()
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	err = app.DB.CreateInvite(user.Username, code)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

@@ -19,6 +19,7 @@ type HTMLData struct {
 	Book     *models.Book
 	Books    []*models.Book
 	Reviews  []*models.Review
+	Invites  []*models.Invite
 	Path     string
 	Form     interface{}
 	Flash    string

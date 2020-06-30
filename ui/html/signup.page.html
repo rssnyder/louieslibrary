@@ -21,6 +21,13 @@
         <input type='email' name='email' value='{{.Email}}'>
       </div>
       <div>
+        <label>Invite Code:</label>
+        {{with .Failures.InviteCode}}
+          <label class='error'>{{.}}</label>
+        {{end}}
+        <input type='text' name='invitecode' value='{{.InviteCode}}'>
+      </div>
+      <div>
         <label>Password:</label>
         {{with .Failures.Password}}
           <label class='error'>{{.}}</label>
