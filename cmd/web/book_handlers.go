@@ -178,7 +178,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the new book
-	id, err := app.DB.InsertBook(form, )
+	_, err = app.DB.InsertBook(form)
 	if err != nil {
 		app.ServerError(w, err)
 		return
@@ -194,7 +194,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/book/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
 
 // CreateReview submits a review for a book
