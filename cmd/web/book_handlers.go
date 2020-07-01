@@ -80,6 +80,8 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.DB.DownloadBook(book.VolumeID, book.Downloads + 1)
+
 	// Server book file
 	app.ServeFile(w, app.BookBucket, fmt.Sprintf("%s.mobi", book.VolumeID), fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
 }

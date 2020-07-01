@@ -64,7 +64,7 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 	// Query statement
 	stmt := `SELECT r.bookid id, r.rating, r.review, r.created, b.title FROM reviews r 
-	INNER JOIN books b ON CAST(r.bookid as INTEGER) = b.id AND r.username = $1 ORDER BY created DESC LIMIT $2`
+	INNER JOIN books b ON r.bookid = b.volumeid AND r.username = $1 ORDER BY created DESC LIMIT $2`
 
 	// Execute query
 	rows, err := db.Query(stmt, username, limit)

@@ -7,41 +7,35 @@
   {{end}}
   {{with .Book}}
     <div class="book">
-      <div class="metadata">
-        <span>#{{.ID}}</span> <strong>{{.VolumeID}}</strong>
+      <div class="row">
+        <div class="column">
+          <img src="{{.ImageLink}}" alt="Book Cover" width="100%">
+        </div>
+        <div class="column">
+          <span>#{{.ID}}</span> <strong>{{.VolumeID}}</strong>
+          <br><strong>Title</strong>: {{.Title}}<br>
+          <br><strong>Subtitle</strong>: {{.Subtitle}}<br>
+          <br><strong>Author</strong>: {{.Authors}}<br>
+          <br><strong>Categories</strong>: {{.Categories}}<br>
+          <br><strong>Publisher</strong>: {{.Publisher}}<br>
+          <br><strong>Published Date</strong>: {{.PublishedDate}}<br>
+          <br><strong>ISBN 10</strong>: {{.ISBN10}}<br>
+          <br><strong>ISBN 13</strong>: {{.ISBN13}}<br>
+          <br><strong>MSRP</strong>: {{.Price}}<br>
+          <br><strong>Maturity Rating</strong>: {{.MaturityRating}}<br>
+          <form action="/book/{{.VolumeID}}" method="POST">
+            <input type="submit" value="Download book">
+          </form>
+          Downloads: {{.Downloads}}<br>
+        </div>
       </div>
       <div class="metadata">
-        <pre><strong>{{.Title}}</strong>
+          {{.Description}}
       </div>
       <div class="metadata">
-        {{.Subtitle}}<br>
+          <br><time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
       </div>
-      <div class="metadata">
-        <code>{{.Authors}}</code><br><br>
-      </div>
-      <div class="metadata">
-          <time>{{.Description}}</time>
-      </div>
-      <br>Categories: {{.Categories}}<br>
-      <br>Publisher: {{.Publisher}}<br>
-      <br>Published Date: {{.PublishedDate}}<br>
-      <br>ISBN 10: {{.ISBN10}}<br>
-      <br>ISBN 13: {{.ISBN13}}<br>
-      <br>MSRP: {{.Price}}<br>
-      <br>Maturity Rating: {{.MaturityRating}}<br>
-      <div class="metadata">
-          <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
-      </div>
-    </div>
-    <img src="{{.ImageLink}}" alt="Book Cover" width="500" height="600">
-    <div>
-        <form action="/book/{{.VolumeID}}" method="POST">
-            <div>
-                <input type="submit" value="Download book">
-            </div>
-        </form>
-    </div>
-    <br>Downloads: {{.Downloads}}<br><br>
+    </div><br><br>
   {{end}}
   {{if .Reviews}}
     {{range .Reviews}}
@@ -52,7 +46,7 @@
         <div class="metadata">
           {{.Rating}} Stars!
         </div>
-        <div class="metadata">
+        <div>
           {{.Review}}
         </div>
         <div class="metadata">

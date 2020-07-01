@@ -41,31 +41,33 @@
     {{end}}
   {{end}}
   <br><br>
-  <form action="/user/invite/create" method="POST">
-    <div>
-        <input type="submit" value="Generate Invite Code">
-    </div>
-  </form>
-  {{if .Invites}}
-    {{range .Invites}}
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Code</th>
-          <th>Username</th>
-          <th>Activated</th>
-        </tr>
-        <tr>
-          <td>{{.ID}}</td>
-          <td>{{.Code}}</td>
-          {{if .Username.Valid}}
-            <td>{{.Username.String}}</td>
-          {{else}}
-            <td></td>
-          {{end}}
-          <td>{{.Activated}}</td>
-        </tr>
-      </table>
+  {{if eq .DisplayUser.Username .User.Username}}
+    <form action="/user/invite/create" method="POST">
+      <div>
+          <input type="submit" value="Generate Invite Code">
+      </div>
+    </form>
+    {{if .Invites}}
+      {{range .Invites}}
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Username</th>
+            <th>Activated</th>
+          </tr>
+          <tr>
+            <td>{{.ID}}</td>
+            <td>{{.Code}}</td>
+            {{if .Username.Valid}}
+              <td>{{.Username.String}}</td>
+            {{else}}
+              <td></td>
+            {{end}}
+            <td>{{.Activated}}</td>
+          </tr>
+        </table>
+      {{end}}
     {{end}}
   {{end}}
 {{end}}

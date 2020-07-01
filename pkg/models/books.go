@@ -96,3 +96,12 @@ func (db *DB) InsertBook(new_book *forms.NewBook) (int, error) {
 
 	return bookid, nil
 }
+
+// DownloadBook incriments the download counter
+func (db *DB) DownloadBook(book_id string, downloads int) {
+
+	// Query statement
+	stmt := `UPDATE books SET downloads = $1 WHERE volumeid = $2`
+
+	db.QueryRow(stmt, downloads, book_id)
+}

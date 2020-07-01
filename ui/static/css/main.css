@@ -20,7 +20,7 @@ body {
 }
 
 header, nav, section, footer {
-  padding: 2px calc((100% - 800px) / 2) 0;
+  padding: 2px calc((100% - 1000px) / 2) 0;
 }
 
 
@@ -299,4 +299,17 @@ tr {
 
 tr:nth-child(2n) {
   background-color: #F7F9FA;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 5px;
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
 }
