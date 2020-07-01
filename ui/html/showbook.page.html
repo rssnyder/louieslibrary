@@ -33,6 +33,7 @@
           <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
       </div>
     </div>
+    <img src="{{.ImageLink}}" alt="Book Cover" width="500" height="600">
     <div>
         <form action="/book/{{.VolumeID}}" method="POST">
             <div>
@@ -40,7 +41,7 @@
             </div>
         </form>
     </div>
-    <br>Downloads: {{.Downloads}}<br>
+    <br>Downloads: {{.Downloads}}<br><br>
   {{end}}
   {{if .Reviews}}
     {{range .Reviews}}
