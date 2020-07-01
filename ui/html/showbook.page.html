@@ -8,28 +8,39 @@
   {{with .Book}}
     <div class="book">
       <div class="metadata">
-        <span>#{{.ID}}</span><strong>{{.ISBN}}</strong>
+        <span>#{{.ID}}</span> <strong>{{.VolumeID}}</strong>
       </div>
       <div class="metadata">
-        <code>{{.Author}}</code>
+        <pre><strong>{{.Title}}</strong>
       </div>
       <div class="metadata">
-        <pre><strong>{{.Title}}</strong> - {{.Genre}}</pre><br><br>
+        {{.Subtitle}}<br>
+      </div>
+      <div class="metadata">
+        <code>{{.Authors}}</code><br><br>
       </div>
       <div class="metadata">
           <time>{{.Description}}</time>
-      </div><br><br>
+      </div>
+      <br>Categories: {{.Categories}}<br>
+      <br>Publisher: {{.Publisher}}<br>
+      <br>Published Date: {{.PublishedDate}}<br>
+      <br>ISBN 10: {{.ISBN10}}<br>
+      <br>ISBN 13: {{.ISBN13}}<br>
+      <br>MSRP: {{.Price}}<br>
+      <br>Maturity Rating: {{.MaturityRating}}<br>
       <div class="metadata">
           <time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
       </div>
     </div>
     <div>
-        <form action="/book/{{.ID}}" method="POST">
+        <form action="/book/{{.VolumeID}}" method="POST">
             <div>
                 <input type="submit" value="Download book">
             </div>
         </form>
     </div>
+    <br>Downloads: {{.Downloads}}<br>
   {{end}}
   {{if .Reviews}}
     {{range .Reviews}}
@@ -51,8 +62,7 @@
   {{end}}
   <br><br><br><br>
   <form action="/book/review" method="POST">
-    <input type="hidden" id="bookid" name="bookid" value="{{.Book.ID}}">
-    <input type="hidden" id="username" name="username" value="{{.User.Username}}">
+    <input type="hidden" id="bookid" name="volumeid" value="{{.Book.VolumeID}}">
     <div>
       Rating:
       <input type="radio" name="rating" value="1"> 1

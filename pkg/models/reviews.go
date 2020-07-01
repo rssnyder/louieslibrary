@@ -6,7 +6,7 @@ import (
 )
 
 // GetReview retrives a review from the db
-func (db *DB) GetReview(bookid int) (*Review, error) {
+func (db *DB) GetReview(bookid string) (*Review, error) {
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1`
 
@@ -26,7 +26,7 @@ func (db *DB) GetReview(bookid int) (*Review, error) {
 }
 
 // LatestBooks grabs the latest 10 valid books
-func (db *DB) LatestReviews(bookid, limit int) (Reviews, error) {
+func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT $2`
 

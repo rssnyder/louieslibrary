@@ -48,14 +48,24 @@ type Invites []*Invite
 
 // Book holds data on a book
 type Book struct {
-	ID         int
-	ISBN       string
-	Title      string
-	Author     string
-	Genre      string
-	Description string
-	Uploader    string
-	Created    time.Time
+	ID							string
+	VolumeID				string
+	Title       		string
+	Subtitle				string
+	Publisher				string
+	PublishedDate		string
+	PageCount				string
+	MaturityRating	string
+	Authors      		string
+	Categories      string
+	Description 		string
+	Uploader 				string
+	Price						string
+	ISBN10					string
+	ISBN13					string
+	ImageLink				string
+	Downloads				int
+	Created    			time.Time
 }
 
 // Books holds multiple books

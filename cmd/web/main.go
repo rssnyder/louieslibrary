@@ -25,10 +25,11 @@ func main() {
 	addr 						:= flag.String("addr", ":4000", "HTTP network address")
 	html_dir 				:= flag.String("html_dir", "./ui/html", "Path to HTML templates")
 	static_dir 			:= flag.String("static_dir", "./ui/static", "Path to static assets")
-	book_dir				:= flag.String("book_dir", "./assets/books", "Path to book assets")
 	youtube_dir 		:= flag.String("youtube_dir", "./assets/youtube", "Path to youtube assets")
 	dsn 						:= flag.String("dsn", "postgres://", "Postgres DSN")
 	storage_server 	:= flag.String("storage_server", "http://", "s3 storage endpoint")
+	book_bucket 		:= flag.String("book_bucket", "library", "bucket for book storage")
+	book_api_key 		:= flag.String("book_api_key", "", "api key for google books api")
 	storage_key 		:= flag.String("storage_key", "key", "s3 access key")
 	storage_secret 	:= flag.String("storage_secret", "secret", "s3 access secret")
 	tlsCert 				:= flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
@@ -54,10 +55,11 @@ func main() {
 	app := &App{
 		HTMLDir:		*html_dir,
 		StaticDir: 	*static_dir,
-		BookDir:   	*book_dir,
 		YoutubeDir:	*youtube_dir,
 		DB:        	&models.DB{db},
 		Storage:		storage,
+		BookBucket: *book_bucket,
+		BookAPIKey: *book_api_key,
 		Sessions:  	session_store,
 	}
 

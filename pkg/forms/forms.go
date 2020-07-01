@@ -86,58 +86,134 @@ func (f *NewUser) Valid() bool {
 
 // Book holds data on a book
 type NewBook struct {
-	ID          int
-	ISBN        string
-	Title       string
-	Author      string
-	Genre       string
-	Description string
-	Upload			bool
-	Uploader 		string
-	Failures    map[string]string
+	VolumeID				string
+	Title       		string
+	Subtitle				string
+	Publisher				string
+	PublishedDate		string
+	PageCount				string
+	MaturityRating	string
+	Authors      		string
+	Categories      string
+	Description 		string
+	Uploader 				string
+	Price						string
+	ISBN10					string
+	ISBN13					string
+	ImageLink				string
+	Failures    		map[string]string
 }
 
 // Valid makes sure the the fields are correctly formatted
 func (f *NewBook) Valid() bool {
 	f.Failures = make(map[string]string)
 
-	// Check for non-empty isbn
-	if strings.TrimSpace(f.ISBN) == "" {
-		f.Failures["ISBN"] = "ISBN is required"
-		log.Printf("Book submitted with no isbn")
-	} else if utf8.RuneCountInString(f.ISBN) > 20 {
-		f.Failures["ISBN"] = "ISBN cannot be longer than 20 characters"
-		log.Printf("Book submitted with ISBN over limit")
+	// Check for non-empty VolumeID
+	if strings.TrimSpace(f.VolumeID) == "" {
+		f.Failures["VolumeID"] = "VolumeID is required"
+		log.Printf("Book submitted with no VolumeID")
 	}
-
-	// Check for non-empty title
+	
+	// Check for non-empty Title
 	if strings.TrimSpace(f.Title) == "" {
 		f.Failures["Title"] = "Title is required"
-		log.Printf("Book submitted with no title")
+		log.Printf("Book submitted with no Title")
 	}
 
-	// Check for non-empty Author
-	if strings.TrimSpace(f.Author) == "" {
-		f.Failures["Author"] = "Author is required"
-		log.Printf("Book submitted with no author")
-	} else if utf8.RuneCountInString(f.Author) > 50 {
-		f.Failures["Author"] = "Author cannot be longer than 50 characters"
-		log.Printf("Book submitted with author over limit")
+	// Check for non-empty Subtitle
+	if strings.TrimSpace(f.Subtitle) == "" {
+		f.Failures["Subtitle"] = "Subtitle is required"
+		log.Printf("Book submitted with no Subtitle")
+	}
+
+	// Check for non-empty Publisher
+	if strings.TrimSpace(f.Publisher) == "" {
+		f.Failures["Publisher"] = "Publisher is required"
+		log.Printf("Book submitted with no Publisher")
+	}
+
+	// Check for non-empty PublishedDate
+	if strings.TrimSpace(f.PublishedDate) == "" {
+		f.Failures["PublishedDate"] = "PublishedDate is required"
+		log.Printf("Book submitted with no PublishedDate")
+	} else if utf8.RuneCountInString(f.PublishedDate) > 50 {
+		f.Failures["PublishedDate"] = "PublishedDate cannot be longer than 50 characters"
+		log.Printf("Book submitted with PublishedDate over limit")
+	}
+
+	// Check for non-empty PageCount
+	if strings.TrimSpace(f.PageCount) == "" {
+		f.Failures["PageCount"] = "PageCount is required"
+		log.Printf("Book submitted with no PageCount")
+	} else if utf8.RuneCountInString(f.PageCount) > 10 {
+		f.Failures["PageCount"] = "PageCount cannot be longer than 10 characters"
+		log.Printf("Book submitted with PageCount over limit")
+	}
+
+	// Check for non-empty MaturityRating
+	if strings.TrimSpace(f.MaturityRating) == "" {
+		f.Failures["MaturityRating"] = "MaturityRating is required"
+		log.Printf("Book submitted with no MaturityRating")
+	}
+
+	// Check for non-empty Authors
+	if strings.TrimSpace(f.Authors) == "" {
+		f.Failures["Authors"] = "Authors is required"
+		log.Printf("Book submitted with no Authors")
+	}
+
+	// Check for non-empty Categories
+	if strings.TrimSpace(f.Categories) == "" {
+		f.Failures["Categories"] = "Categories is required"
+		log.Printf("Book submitted with no Categories")
 	}
 
 	// Check for non-empty Description
 	if strings.TrimSpace(f.Description) == "" {
 		f.Failures["Description"] = "Description is required"
-		log.Printf("Book submitted with no description")
+		log.Printf("Book submitted with no Description")
 	}
 
-	// Check for non-empty Genre
-	if strings.TrimSpace(f.Genre) == "" {
-		f.Failures["Genre"] = "Genre is required"
-		log.Printf("Book submitted with no genre")
-	} else if utf8.RuneCountInString(f.Genre) > 50 {
-		f.Failures["Genre"] = "Genre cannot be longer than 50 characters"
-		log.Printf("Book submitted with genre over limit")
+	// Check for non-empty Uploader
+	if strings.TrimSpace(f.Uploader) == "" {
+		f.Failures["Uploader"] = "Uploader is required"
+		log.Printf("Book submitted with no Uploader")
+	} else if utf8.RuneCountInString(f.Uploader) > 50 {
+		f.Failures["Uploader"] = "Uploader cannot be longer than 50 characters"
+		log.Printf("Book submitted with Uploader over limit")
+	}
+
+	// Check for non-empty Price
+	if strings.TrimSpace(f.Price) == "" {
+		f.Failures["Price"] = "Price is required"
+		log.Printf("Book submitted with no Price")
+	} else if utf8.RuneCountInString(f.Price) > 10 {
+		f.Failures["Price"] = "Price cannot be longer than 10 characters"
+		log.Printf("Book submitted with Price over limit")
+	}
+
+	// Check for non-empty ISBN10
+	if strings.TrimSpace(f.ISBN10) == "" {
+		f.Failures["ISBN10"] = "ISBN10 is required"
+		log.Printf("Book submitted with no ISBN10")
+	} else if utf8.RuneCountInString(f.ISBN10) > 10 {
+		f.Failures["ISBN10"] = "ISBN10 cannot be longer than 10 characters"
+		log.Printf("Book submitted with ISBN10 over limit")
+	}
+
+	// Check for non-empty ISBN13
+	if strings.TrimSpace(f.ISBN13) == "" {
+		f.Failures["ISBN13"] = "ISBN13 is required"
+		log.Printf("Book submitted with no ISBN13")
+	} else if utf8.RuneCountInString(f.ISBN13) > 13 {
+		f.Failures["ISBN13"] = "ISBN13 cannot be longer than 13 characters"
+		log.Printf("Book submitted with ISBN13 over limit")
+	}
+
+	// Check for non-empty ImageLink
+	if strings.TrimSpace(f.ImageLink) == "" {
+		f.Failures["ImageLink"] = "ImageLink is required"
+		log.Printf("Book submitted with no ImageLink")
 	}
 
 	return len(f.Failures) == 0

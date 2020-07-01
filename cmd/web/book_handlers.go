@@ -18,12 +18,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-
-	if err != nil || id < 1 {
-		app.NotFound(w)
-		return
-	}
+	id := vars["volumeid"]
 
 	// Get book
 	book, err := app.DB.GetBook(id)
@@ -32,6 +27,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if book == nil {
+		fmt.Println("hello")
 		app.NotFound(w)
 		return
 	}
@@ -71,7 +67,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	// Get requested book id
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id := vars["volumeid"]
 
 	// Get book
 	book, err := app.DB.GetBook(id)
@@ -85,7 +81,7 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Server book file
-	app.ServeFile(w, "library", fmt.Sprintf("%s.mobi", book.ISBN), fmt.Sprintf("%s - %s.mobi", book.Title, book.Author))
+	app.ServeFile(w, app.BookBucket, fmt.Sprintf("%s.mobi", book.VolumeID), fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
 }
 
 // NewBook displays the new book upload form
@@ -103,16 +99,52 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	//Limit upload to 10mb
 	r.ParseMultipartForm(10 << 20)
 
+	// Get uploader
 	_, user := app.LoggedIn(r)
 
-	// Model the new user book on html form
+	// If no title, try and get volume information
+	if r.PostForm.Get("title") == "" {
+		book_info := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
+
+		// Model the new book on api feedback
+		form := &forms.NewBook{
+			VolumeID:				book_info.Id,
+			Title:       		book_info.Data.Title,
+			Subtitle:				book_info.Data.Subtitle,
+			Publisher:			book_info.Data.Publisher,
+			PublishedDate:	book_info.Data.PublishedDate,
+			PageCount:			strconv.Itoa(book_info.Data.PageCount),
+			MaturityRating:	book_info.Data.MaturityRating,
+			Authors:      	fmt.Sprint(book_info.Data.Authors),
+			Categories:     fmt.Sprint(book_info.Data.Categories),
+			Description: 		book_info.Data.Description,
+			Uploader: 			user.Username,
+			Price:					fmt.Sprintf("%.2f %s", book_info.SaleInfo.Retail.Amount, book_info.SaleInfo.Retail.CurrencyCode),
+			ISBN10:					fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[0].Identifier),
+			ISBN13:					fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[1].Identifier),
+			ImageLink:			fmt.Sprint(book_info.Data.ImageLinks.Small),
+		}
+
+		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
+		return
+	}
+
 	form := &forms.NewBook{
-		ISBN:         r.PostForm.Get("isbn"),
-		Author:       r.PostForm.Get("author"),
-		Uploader:      user.Username,
-		Title:        r.PostForm.Get("title"),
-		Description:  r.PostForm.Get("description"),
-		Genre:        r.PostForm.Get("genre"),
+		VolumeID:				r.PostForm.Get("volumeid"),
+		Title:       		r.PostForm.Get("title"),
+		Subtitle:				r.PostForm.Get("subtitle"),
+		Publisher:			r.PostForm.Get("publisher"),
+		PublishedDate:	r.PostForm.Get("publisheddate"),
+		PageCount:			r.PostForm.Get("pagecount"),
+		MaturityRating:	r.PostForm.Get("maturityrating"),
+		Authors:      	r.PostForm.Get("authors"),
+		Categories:     r.PostForm.Get("categories"),
+		Description: 		r.PostForm.Get("description"),
+		Uploader: 			user.Username,
+		Price:					r.PostForm.Get("price"),
+		ISBN10:					r.PostForm.Get("isbn10"),
+		ISBN13:					r.PostForm.Get("isbn13"),
+		ImageLink:			r.PostForm.Get("imagelink"),
 	}
 
 	// Validate form
@@ -125,7 +157,6 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("epub")
 	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
-		form.Upload = false
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
@@ -136,19 +167,18 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
-		form.Upload = false
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
 
 	// Send book to storage server
-	err = app.UploadBytes("library", fmt.Sprintf("%s.mobi", form.ISBN), fileBytes)
+	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.mobi", form.VolumeID), fileBytes)
 	if err != nil {
 		app.ServerError(w, err)
 	}
 
 	// Insert the new book
-	id, err := app.DB.InsertBook(form.ISBN, form.Title, form.Author, form.Uploader, form.Description, form.Genre)
+	id, err := app.DB.InsertBook(form, )
 	if err != nil {
 		app.ServerError(w, err)
 		return
@@ -179,10 +209,13 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get uploader
+	_, user := app.LoggedIn(r)
+
 	// Model the new review on html form
 	form := &forms.NewReview{
-		BookID:    r.PostForm.Get("bookid"),
-		Username:  r.PostForm.Get("username"),
+		BookID:    r.PostForm.Get("volumeid"),
+		Username:  user.Username,
 		Rating:    r.PostForm.Get("rating"),
 		Review:    r.PostForm.Get("review"),
 	}
