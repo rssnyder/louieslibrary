@@ -5,7 +5,7 @@
   <form action="/request/new" method="POST">
     {{with .Form}}
       <div>
-        <label>Information (Title, Author, IBSN):</label>
+        <label>Information (eg. Title, Author, ISBN):</label>
         {{with .Failures.Title}}
           <label class="error">{{.}}</label>
         {{end}}

@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+// UploadBytes puts bytes in a bucket
 func (app *App) UploadBytes(bucket, key string, data []byte) error {
 	storage_connection := s3.New(app.Storage)
 
@@ -28,6 +29,7 @@ func (app *App) UploadBytes(bucket, key string, data []byte) error {
 	return nil
 }
 
+// UploadFile puts a file in a bucket
 func (app *App) UploadFile(bucket, key, filename string) error {
 	storage_connection := s3.New(app.Storage)
 
@@ -50,6 +52,7 @@ func (app *App) UploadFile(bucket, key, filename string) error {
 	return nil
 }
 
+// DownloadObject gets an object into a file
 func (app *App) DownloadObject(bucket, key, destination string) error {
 	// Retrieve object
 	file, err := os.Create(destination)
@@ -70,6 +73,7 @@ func (app *App) DownloadObject(bucket, key, destination string) error {
 	return nil
 }
 
+// DownloadBytes gets an object into bytes
 func (app *App) DownloadBytes(bucket, key string) ([]byte, error) {
 	var output []byte
 	storage_connection := s3.New(app.Storage)
@@ -90,13 +94,14 @@ func (app *App) DownloadBytes(bucket, key string) ([]byte, error) {
 	return output, nil
 }
 
+// ServeFile sends a file from a bucket to a user
 func (app *App) ServeFile(w http.ResponseWriter, bucket, key, name string) {
 	data, err := app.DownloadBytes(bucket, key)
 	if err != nil {
 		app.ServerError(w, err)
 		return
 	}
-	
+
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", name))
 	w.Write(data)
 }

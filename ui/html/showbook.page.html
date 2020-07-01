@@ -39,20 +39,12 @@
   {{end}}
   {{if .Reviews}}
     {{range .Reviews}}
-      <div class="review">
-        <div class="metadata">
-          <strong><a href="/user/{{.Username}}">{{.Username}}</a></strong>
-        </div>
-        <div class="metadata">
-          {{.Rating}} Stars!
-        </div>
-        <div>
-          {{.Review}}
-        </div>
-        <div class="metadata">
+      <p class="ridge">
+          <strong><a href="/user/{{.Username}}">{{.Username}}</a></strong><br>
+          {{.Rating}} Stars!<br>
+          {{.Review}}<br>
           <time>{{humanDate .Created}}</time>
-        </div>
-      </div><br>
+      </p><br>
     {{end}}
   {{end}}
   <br><br><br><br>

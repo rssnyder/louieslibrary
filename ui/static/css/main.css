@@ -313,3 +313,8 @@ tr:nth-child(2n) {
   clear: both;
   display: table;
 }
+
+p.ridge {
+  border-style: ridge;
+  margin: auto;
+}

@@ -27,7 +27,6 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if book == nil {
-		fmt.Println("hello")
 		app.NotFound(w)
 		return
 	}
