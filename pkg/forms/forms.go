@@ -86,6 +86,7 @@ func (f *NewUser) Valid() bool {
 
 // Book holds data on a book
 type NewBook struct {
+	ID 							string
 	VolumeID				string
 	Title       		string
 	Subtitle				string

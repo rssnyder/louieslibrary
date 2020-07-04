@@ -242,5 +242,5 @@ func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/user/%s", user.Username), http.StatusSeeOther)
 }

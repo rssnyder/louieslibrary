@@ -37,8 +37,8 @@
 				</a>
 			{{end}}
 		</nav>
+		{{if .User.ID}}
 		<nav>
-			{{if .User.ID}}
 			<a href="/request/new" {{if eq .Path "/request/new"}}class="live"{{end}}>
 				New Request
 			</a>
@@ -50,8 +50,8 @@
 						New Book
 					</a>
 				{{end}}
-			{{end}}
 		</nav>
+		{{end}}
 		<section>
 			{{template "page-body" .}}
 		</section>

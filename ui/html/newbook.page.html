@@ -2,12 +2,17 @@
   New Book
 {{end}}
 {{define "page-body"}}
-  <form enctype="multipart/form-data" action="/write/book" method="POST">
-    {{with .Form}}
-      {{if .VolumeID}}
+  {{with .Form}}
+    {{if not .VolumeID}}
+      <form enctype="multipart/form-data" action="/write/book" method="POST">
         <div>
           <label>Volume ID:</label>
           <input type="text" name="volumeid" value="{{.VolumeID}}">
+        </div>
+    {{else}}
+      <form enctype="multipart/form-data" action="/book/edit" method="POST">
+        <div>
+          <input type="hidden" name="volumeid" value="{{.VolumeID}}">
         </div>
         <div>
           <label>Title:</label>
@@ -64,15 +69,10 @@
         <div>
           <input type="file" name="epub" />
         </div>
-      {{else}}
-        <div>
-          <label>Volume ID:</label>
-          <input type="text" name="volumeid" value="">
-        </div>
       {{end}}
-      <div>
-        <input type="submit" value="Publish book">
-      </div>
-    {{end}}
-  </form>
+        <div>
+          <input type="submit" value="Publish book">
+        </div>
+    </form>
+  {{end}}
 {{end}}

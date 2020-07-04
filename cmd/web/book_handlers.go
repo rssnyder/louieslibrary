@@ -7,6 +7,7 @@ import (
 	"log"
 	"io/ioutil"
 	"github.com/gorilla/mux"
+	"path/filepath"
 
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 )
@@ -155,7 +156,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get book file from form
-	file, _, err := r.FormFile("epub")
+	file, handler, err := r.FormFile("epub")
 	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
@@ -172,8 +173,11 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get file format
+	format := filepath.Ext(handler.Filename)
+
 	// Send book to storage server
-	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.mobi", form.VolumeID), fileBytes)
+	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.%s", form.VolumeID, format), fileBytes)
 	if err != nil {
 		app.ServerError(w, err)
 	}
@@ -269,4 +273,78 @@ func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "showbooks.page.html", &HTMLData{
 		Books:    books,
 	})
+}
+
+// EditBook lets a writer make a change to a book
+func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
+	// Get requested book id
+	vars := mux.Vars(r)
+	id := vars["volumeid"]
+
+	// Get book
+	book, err := app.DB.GetBook(id)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+	if book == nil {
+		app.NotFound(w)
+		return
+	}
+
+	// Model the book
+	form := &forms.NewBook{
+		ID:							book.ID,
+		VolumeID:				book.VolumeID,
+		Title:       		book.Title,
+		Subtitle:				book.Subtitle,
+		Publisher:			book.Publisher,
+		PublishedDate:	book.PublishedDate,
+		PageCount:			book.PageCount,
+		MaturityRating:	book.MaturityRating,
+		Authors:      	book.Authors,
+		Categories:     book.Categories,
+		Description: 		book.Description,
+		Price:					book.Price,
+		ISBN10:					book.ISBN10,
+		ISBN13:					book.ISBN13,
+		ImageLink:			book.ImageLink,
+	}
+
+	app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
+	return
+}
+
+func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
+
+	//Limit upload to 10mb
+	r.ParseMultipartForm(10 << 20)
+
+	form := &forms.NewBook{
+		VolumeID:				r.PostForm.Get("volumeid"),
+		Title:       		r.PostForm.Get("title"),
+		Subtitle:				r.PostForm.Get("subtitle"),
+		Publisher:			r.PostForm.Get("publisher"),
+		PublishedDate:	r.PostForm.Get("publisheddate"),
+		PageCount:			r.PostForm.Get("pagecount"),
+		MaturityRating:	r.PostForm.Get("maturityrating"),
+		Authors:      	r.PostForm.Get("authors"),
+		Categories:     r.PostForm.Get("categories"),
+		Description: 		r.PostForm.Get("description"),
+		Uploader: 			"no change",
+		Price:					r.PostForm.Get("price"),
+		ISBN10:					r.PostForm.Get("isbn10"),
+		ISBN13:					r.PostForm.Get("isbn13"),
+		ImageLink:			r.PostForm.Get("imagelink"),
+	}
+
+	// Validate form
+	if !form.Valid() {
+		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
+		return
+	}
+	
+	app.DB.UpdateBook(form)
+
+	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }

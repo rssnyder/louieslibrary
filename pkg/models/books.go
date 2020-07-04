@@ -105,3 +105,21 @@ func (db *DB) DownloadBook(book_id string, downloads int) {
 
 	db.QueryRow(stmt, downloads, book_id)
 }
+
+// UpdateBook edits a book attributes
+func (db *DB) UpdateBook(book *forms.NewBook) (int, error) {
+	// Save stored request
+	var bookid int
+
+	// Query statement
+	stmt := `UPDATE books SET title = $1, subtitle = $2, publisher = $3, publisheddate = $4, pagecount = $5,
+		maturityrating = $6, authors = $7, categories = $8, description = $9, price = $10, isbn10 = $11, isbn13 = $12, imagelink = $13 WHERE volumeid = $14`
+
+	db.QueryRow(stmt, book.Title, book.Subtitle, book.Publisher, book.PublishedDate, book.PageCount,
+		book.MaturityRating, book.Authors, book.Categories, book.Description, book.Price, book.ISBN10, book.ISBN13,
+		book.ImageLink, book.VolumeID)
+
+	log.Printf("Book %s edited", book.Title)
+
+	return bookid, nil
+}

@@ -5,6 +5,9 @@
   {{with .Flash}}
     <div class="flash">{{.}}</div>
   {{end}}
+  {{if eq .User.Role "writer"}}
+    <a href="/book/edit/{{.Book.VolumeID}}">Edit Book</a>
+  {{end}}
   {{with .Book}}
     <div class="book">
       <div class="row">
@@ -19,12 +22,13 @@
           <br><strong>Categories</strong>: {{.Categories}}<br>
           <br><strong>Publisher</strong>: {{.Publisher}}<br>
           <br><strong>Published Date</strong>: {{.PublishedDate}}<br>
+          <br><strong>Page Count</strong>: {{.PageCount}}<br>
           <br><strong>ISBN 10</strong>: {{.ISBN10}}<br>
           <br><strong>ISBN 13</strong>: {{.ISBN13}}<br>
           <br><strong>MSRP</strong>: {{.Price}}<br>
           <br><strong>Maturity Rating</strong>: {{.MaturityRating}}<br>
           <form action="/book/{{.VolumeID}}" method="POST">
-            <input type="submit" value="Download book">
+            <input type="submit" value="Download Book">
           </form>
           Downloads: {{.Downloads}}<br>
         </div>
