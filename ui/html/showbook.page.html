@@ -30,6 +30,9 @@
           <form action="/book/{{.VolumeID}}" method="POST">
             <input type="submit" value="Download Book">
           </form>
+          <form action="/book/collect/{{.VolumeID}}" method="POST">
+            <input type="submit" value="Add to Collection">
+          </form>
           Downloads: {{.Downloads}}<br>
         </div>
       </div>

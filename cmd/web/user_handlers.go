@@ -203,6 +203,13 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get Collection
+	collection, err := app.DB.GetCollection(username)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
 	_, current_user := app.LoggedIn(r)
 
 	if username == current_user.Username {
@@ -215,11 +222,13 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 			DisplayUser:   user,
 			Invites: invites,
 			Reviews: reviews,
+			Books: collection,
 		})
 	} else {
 		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
 			DisplayUser:   user,
 			Reviews: reviews,
+			Books: collection,
 		})
 	}
 }

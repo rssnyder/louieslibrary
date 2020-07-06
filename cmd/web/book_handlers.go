@@ -348,3 +348,16 @@ func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
+
+func (app *App) AddToCollection(w http.ResponseWriter, r *http.Request) {
+	// Get requested book id
+	vars := mux.Vars(r)
+	id := vars["volumeid"]
+
+	// Get user
+	_, user := app.LoggedIn(r)
+
+	app.DB.CollectBook(user.Username, id)
+
+	http.Redirect(w, r, fmt.Sprintf("/book/%s", id), http.StatusSeeOther)
+}

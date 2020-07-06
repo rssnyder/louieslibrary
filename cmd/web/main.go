@@ -63,10 +63,6 @@ func main() {
 		Sessions:  	session_store,
 	}
 
-	//app.UploadObject("dump", "test")
-	//app.DownloadObject("dump", "test", "thisismyminiodownload")
-	// app.DownloadBytes("library", "p - p.mobi")
-
 	//Start server, quit on failure
 	log.Printf("Starting server on %s", *addr)
 	if *env == "test" {

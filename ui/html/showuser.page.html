@@ -21,6 +21,12 @@
         </tr>
       </table>
     {{end}}
+    {{if .Books}}
+    <br>
+      {{range .Books}}
+        <a href="/book/{{.VolumeID}}"><img src="{{.ImageLink}}" width="100" height="170"></a>
+      {{end}}
+    {{end}}
     {{if .Reviews}}
     {{range .Reviews}}
       <br><br>

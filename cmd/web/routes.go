@@ -25,6 +25,7 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/book/review", app.RequireLogin(http.HandlerFunc(app.CreateReview))).Methods("POST")
 	r.Handle("/book/edit", app.RequireLogin(http.HandlerFunc(app.UpdateBook))).Methods("POST")
 	r.Handle("/book/edit/{volumeid}", app.RequireLogin(http.HandlerFunc(app.EditBook))).Methods("GET")
+	r.Handle("/book/collect/{volumeid}", app.RequireLogin(http.HandlerFunc(app.AddToCollection))).Methods("POST")
 	r.Handle("/book/{volumeid}", app.RequireLogin(http.HandlerFunc(app.ShowBook))).Methods("GET")
 	r.Handle("/book/{volumeid}", app.RequireLogin(http.HandlerFunc(app.DownloadBook))).Methods("POST")
 	

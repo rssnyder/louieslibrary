@@ -123,3 +123,64 @@ func (db *DB) UpdateBook(book *forms.NewBook) (int, error) {
 
 	return bookid, nil
 }
+
+
+// CollectBook adds a book to a users collection
+func (db *DB) CollectBook(username, id string) {
+	// Query statement
+	stmt := `INSERT INTO collection (username, volumeid, year, created) VALUES ($1, $2, '2020', timezone('utc', now()))`
+
+	db.QueryRow(stmt, username, id)
+
+	log.Printf("%s collected book %s", username, id)
+}
+
+// GetCollectionEntry gets a book from a collection
+// func (db *DB) GetCollectionEntry(username, id string) Book {
+// 	book := &Book{}
+
+// 	// Query statement
+// 	stmt := `SELECT username, volumeid FROM collection WHERE username = $1 AND volumeid = $2`
+
+// 	db.QueryRow(stmt, username, id).Scan(&bookid)
+
+// 	log.Printf("%s collected book %s", username, id)
+// }
+
+// CollectBook gets the books in a users collection
+func (db *DB) GetCollection(username string) (Books, error) {
+	// Query statement
+	stmt := `SELECT c.volumeid id, b.title, b.imagelink, c.year FROM collection c 
+		INNER JOIN books b ON c.volumeid = b.volumeid AND c.username = $1`
+
+	// Execute query
+	rows, err := db.Query(stmt, username)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	books := Books{}
+
+	// Get all the matching requets
+	for rows.Next() {
+		b := &Book{}
+
+		// Pull data into request
+		err := rows.Scan(&b.VolumeID, &b.Title, &b.ImageLink, &b.Subtitle)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, b)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	log.Printf("Got collection for %s", username)
+
+	return books, nil
+}
