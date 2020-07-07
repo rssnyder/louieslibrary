@@ -113,3 +113,14 @@ func CreateUUID() (string, error) {
 	// Return the guid
 	return uuid, nil
 }
+
+// AppendIfUnique
+// Append only if item is unique
+func AppendIfUnique(slice []string, i string) []string {
+	for _, ele := range slice {
+		if ele == i {
+			return slice
+		}
+	}
+	return append(slice, i)
+}

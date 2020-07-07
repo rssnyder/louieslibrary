@@ -5,8 +5,10 @@ import (
 	"log"
 )
 
-// GetReview retrives a review from the db
+// GetReview
+// Get a review from the db
 func (db *DB) GetReview(bookid string) (*Review, error) {
+
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1`
 
@@ -25,8 +27,10 @@ func (db *DB) GetReview(bookid string) (*Review, error) {
 	return r, nil
 }
 
-// LatestBooks grabs the latest 10 valid books
+// LatestReviews
+// Grab latest n reviews
 func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
+	
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT $2`
 
@@ -35,9 +39,9 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
+	// Empty review collection
 	reviews := Reviews{}
 
 	// Get all the matching requets
@@ -50,9 +54,11 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 			return nil, err
 		}
 
+		// Add review to collection
 		reviews = append(reviews, r)
 	}
 
+	// Catch sql errors
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
@@ -60,8 +66,10 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 	return reviews, nil
 }
 
-// UserLatestReviews grabs the latest 10 valid books
+// UserLatestReviews
+// Get users reviews
 func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
+
 	// Query statement
 	stmt := `SELECT r.bookid id, r.rating, r.review, r.created, b.title FROM reviews r 
 	INNER JOIN books b ON r.bookid = b.volumeid AND r.username = $1 ORDER BY created DESC LIMIT $2`
@@ -71,9 +79,9 @@ func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
+	// Empty review collection
 	reviews := Reviews{}
 
 	// Get all the matching requets
@@ -86,9 +94,11 @@ func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 			return nil, err
 		}
 
+		// Add review to collection
 		reviews = append(reviews, r)
 	}
 
+	// Catch sql errors
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
@@ -96,14 +106,17 @@ func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 	return reviews, nil
 }
 
-// InsertBooks adds a new book to the library
+// InsertReview
+// Add a new review
 func (db *DB) InsertReview(bookid, username, rating, review string) (int, error) {
+
 	// Save stored request
 	var reviewid int
 
 	// Query statement
 	stmt := `INSERT INTO reviews (bookid, username, rating, review, created) VALUES ($1, $2, $3, $4, timezone('utc', now())) RETURNING id`
 
+	// Create
 	err := db.QueryRow(stmt, bookid, username, rating, review).Scan(&reviewid)
 	if err != nil {
 		return 0, err
@@ -111,5 +124,6 @@ func (db *DB) InsertReview(bookid, username, rating, review string) (int, error)
 
 	log.Printf("New review added by %s", username)
 
+	// Return id of new review
 	return reviewid, nil
 }

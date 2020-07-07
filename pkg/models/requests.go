@@ -5,8 +5,10 @@ import (
 	"log"
 )
 
-// GetRequest retrives a request from the db
+// GetRequest
+// Retrive a request from the db
 func (db *DB) GetRequest(id int) (*Request, error) {
+
 	// Query statement
 	stmt := `SELECT id, requester, title, status, bookid, created FROM requests WHERE id = $1`
 
@@ -24,11 +26,14 @@ func (db *DB) GetRequest(id int) (*Request, error) {
 
 	log.Printf("BOOKID IS %s", r.BookID)
 
+	// Return review
 	return r, nil
 }
 
-// LatestRequests grabs the latest 10 valid request
+// LatestRequests
+// Grab latest n requests
 func (db *DB) LatestRequests(limit int) (Requests, error) {
+
 	// Query statement
 	stmt := `SELECT id, requester, title, status, created FROM requests ORDER BY created DESC LIMIT $1`
 
@@ -37,9 +42,9 @@ func (db *DB) LatestRequests(limit int) (Requests, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
+	// Empty request collection
 	requests := Requests{}
 
 	// Get all the matching requets
@@ -52,9 +57,11 @@ func (db *DB) LatestRequests(limit int) (Requests, error) {
 			return nil, err
 		}
 
+		// Add request to collection
 		requests = append(requests, r)
 	}
 
+	// Catch sql errors
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
@@ -62,14 +69,17 @@ func (db *DB) LatestRequests(limit int) (Requests, error) {
 	return requests, nil
 }
 
-// InsertRequest adds a new request to the db
+// InsertRequest
+// Add new request to the db
 func (db *DB) InsertRequest(requester, title, source string) (int, error) {
+
 	// Save stored request
 	var requestid int
 
 	// Query statement
 	stmt := `INSERT INTO requests (requester, title, source, status, bookid, created) VALUES ($1, $2, $3, 'missing', '', timezone('utc', now())) RETURNING id`
 
+	// Create new request
 	err := db.QueryRow(stmt, requester, title, source).Scan(&requestid)
 	if err != nil {
 		return 0, err
@@ -77,17 +87,18 @@ func (db *DB) InsertRequest(requester, title, source string) (int, error) {
 
 	log.Printf("New request submitted by %s", requester)
 
+	// Return new request id
 	return requestid, nil
 }
 
-// FillRequest links a request to a book
+// FillRequest
+// Link a request to a book
 func (db *DB) FillRequest(requestid int, bookid string) string {
-
-	log.Printf("filling request %d with %s", requestid, bookid)
 
 	// Query statement
 	stmt := `UPDATE requests SET bookid = $1, status = 'found' WHERE id = $2`
 
+	// Link
 	err := db.QueryRow(stmt, bookid, requestid)
 	if err == nil {
 		return ""

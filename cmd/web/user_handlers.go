@@ -5,19 +5,21 @@ import (
 	"net/http"
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
-
 	"github.com/gorilla/mux"
 )
 
-// SignupUser presents a form to gather user information
+// SignupUser
+// Display the signup form
 func (app *App) SignupUser(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "signup.page.html", &HTMLData{
 		Form: &forms.NewUser{},
 	})
 }
 
-// CreateUser uses a form to create a user account
+// CreateUser
+// Use signup form to create a new user
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -63,8 +65,6 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%s", used)
-
 	// Insert the new user
 	err = app.DB.InsertUser(form.Username, form.Email, form.Password)
 	if err != nil {
@@ -79,7 +79,6 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save success message
 	session.AddFlash("Your account was created successfully! Please login.", "default")
 
 	// Save session
@@ -92,13 +91,16 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-// LoginUser 
+// LoginUser
+// Displays a login page
 func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
-	// Get the previous flashes, if any.
+	// Get the previous flash
 	if flashes := session.Flashes("default"); len(flashes) > 0 {
+
 		// Save session
 		err := session.Save(r, w)
 		if err != nil {
@@ -106,11 +108,14 @@ func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Display login with flash
 		app.RenderHTML(w, r, "login.page.html", &HTMLData{
 			Form: &forms.NewUser{},
 			Flash:   fmt.Sprintf("%v", flashes[0]),
 		})
 	} else {
+
+		// Display login without flash
 		app.RenderHTML(w, r, "login.page.html", &HTMLData{
 			Form: &forms.NewUser{},
 			Flash:   "",
@@ -119,7 +124,9 @@ func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // VerifyUser
+// Authenticates a user
 func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -130,11 +137,12 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Authenticate the user
 	user := &models.User{}
 	user, err = app.DB.AuthenticateUser(r.PostForm.Get("username"), r.PostForm.Get("password"))
 
 	if user == (&models.User{}) {
-		// Save failure message
+
 		session.AddFlash("Invalid Login", "default")
 
 		// Save session
@@ -144,6 +152,7 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Redirect to login page
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 	}
 
@@ -157,14 +166,18 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send logged in user to homepage
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // LogoutUser
+// Removes a users session
 func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
+// Set user session to empty user
 	session.Values["user"] = &models.User{}
 
 	// Save session
@@ -174,23 +187,27 @@ func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// Send to login page
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
 // ShowUser
+// Display a users info page
 func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
+
 	// Get requested user
 	vars := mux.Vars(r)
 	username := vars["username"]
 
+	// Get user from db
 	user := &models.User{}
 	user, err := app.DB.GetUser(username)
-
 	if err != nil {
 		app.NotFound(w)
 		return
 	}
 
+	// Check for nil user
 	if user.ID == 0 {
 		app.NotFound(w)
 		return
@@ -210,14 +227,20 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get current user
 	_, current_user := app.LoggedIn(r)
 
+	// If a user is viewing their own page
 	if username == current_user.Username {
+
+		// Get current invites from db
 		invites, err := app.DB.GetInvites(username)
 		if err != nil {
 			app.ServerError(w, err)
 			return
 		}
+
+		// Display user page with invites
 		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
 			DisplayUser:   user,
 			Invites: invites,
@@ -225,6 +248,8 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 			Books: collection,
 		})
 	} else {
+
+		// Display user page without invites
 		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
 			DisplayUser:   user,
 			Reviews: reviews,
@@ -233,7 +258,10 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CreateInviteCode
+// Generate an invite code for new users
 func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
+
 	// Get user info
 	user := &models.User{}
 	_, user = app.LoggedIn(r)
@@ -245,11 +273,13 @@ func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a new invite
 	err = app.DB.CreateInvite(user.Username, code)
 	if err != nil {
 		app.ServerError(w, err)
 		return
 	}
 
+	// Show user their page to display the new invite code
 	http.Redirect(w, r, fmt.Sprintf("/user/%s", user.Username), http.StatusSeeOther)
 }

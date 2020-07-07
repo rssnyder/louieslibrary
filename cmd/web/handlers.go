@@ -34,3 +34,9 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 		Books:    books,
 	})
 }
+
+// About
+// Display the site information page
+func (app *App) About(w http.ResponseWriter, r *http.Request) {
+	app.RenderHTML(w, r, "about.page.html", &HTMLData{})
+}

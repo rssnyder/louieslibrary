@@ -10,6 +10,7 @@ Currently in alpha, these are the implimented features:
   - Collections
     - Record your reading progress
   - Invite System for new users
+  - User messages/inbox (early stages)
   - Extra Utilities:
     - Youtube Video/Playlist to MP3 (useful for audiobooks)
 
@@ -17,9 +18,7 @@ TODO:
   - Collections
     - Set year of completion
     - Reading goal
-  - Code cleanup (all modules)
   - Site Announcements
-  - User messages/inbox
   - Mobi to EPub/PDF Conversion
   - How-To Video for Download/Install on Kindle
   - Consider document-based DB (mongo?)

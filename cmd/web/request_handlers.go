@@ -5,26 +5,26 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 	"github.com/gorilla/mux"
 )
 
-// ShowRequest displays a single request
+// ShowRequest
+// Display a single request
 func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
 	// Get requested snippet id
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
-
 	if err != nil || id < 1 {
 		app.NotFound(w)
 		return
 	}
 
-	// Get request
+	// Get request from db
 	request, err := app.DB.GetRequest(id)
 	if err != nil {
 		app.ServerError(w, err)
@@ -35,10 +35,12 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Trim space on a found book id
 	request.BookID = strings.TrimSpace(request.BookID)
 
-	// Get the previous flashes, if any.
+	// Get the previous flash
 	if flashes := session.Flashes("default"); len(flashes) > 0 {
+
 		// Save session
 		err = session.Save(r, w)
 		if err != nil {
@@ -46,11 +48,14 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Render page with flash
 		app.RenderHTML(w, r, "showrequest.page.html", &HTMLData{
 			Request: request,
 			Flash:   fmt.Sprintf("%v", flashes[0]),
 		})
 	} else {
+
+		// Render page without flash
 		app.RenderHTML(w, r, "showrequest.page.html", &HTMLData{
 			Request: request,
 			Flash:   "",
@@ -58,15 +63,18 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// NewRequest displays the new request form
+// NewRequest
+// Display the new request form
 func (app *App) NewRequest(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "newrequest.page.html", &HTMLData{
 		Form: &forms.NewRequest{},
 	})
 }
 
-// CreateRequest creates a new request
+// CreateRequest
+// Create a new request in the db
 func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
+	
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -78,11 +86,7 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get requester
-	valid, user := app.LoggedIn(r)
-	if !valid {
-		app.ClientError(w, http.StatusBadRequest)
-		return
-	}
+	_, user := app.LoggedIn(r)
 
 	// Model the new request based on html form
 	form := &forms.NewRequest{
@@ -103,7 +107,6 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save success message
 	session.AddFlash("Your request was saved successfully!", "default")
 
 	// Save session
@@ -113,11 +116,14 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/// Send user to the newly added request
 	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
 }
 
-// FillRequest fills q request
+// FillRequest
+// Tie a request to an existing book
 func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -139,7 +145,6 @@ func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save success message
 	session.AddFlash("Request filled!", "default")
 
 	// Save session
@@ -149,18 +154,22 @@ func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send user to request page
 	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
 }
 
-// ListAllRequests does what it says
+// ListAllRequests
+// Displays all the requests
 func (app *App) ListAllRequests(w http.ResponseWriter, r *http.Request) {
-	// Get the requests
+
+	// Get the requests from the db
 	requests, err := app.DB.LatestRequests(1000)
 	if err != nil {
 		app.ServerError(w, err)
 		return
 	}
 
+	// Display all requests
 	app.RenderHTML(w, r, "showrequests.page.html", &HTMLData{
 		Requests:    requests,
 	})

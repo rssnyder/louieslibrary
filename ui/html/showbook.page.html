@@ -11,10 +11,10 @@
   {{with .Book}}
     <div class="book">
       <div class="row">
-        <div class="column">
+        <div class="column half">
           <img src="{{.ImageLink}}" alt="Book Cover" width="100%">
         </div>
-        <div class="column">
+        <div class="column half">
           <span>#{{.ID}}</span> <strong>{{.VolumeID}}</strong>
           <br><strong>Title</strong>: {{.Title}}<br>
           <br><strong>Subtitle</strong>: {{.Subtitle}}<br>
@@ -36,10 +36,13 @@
           Downloads: {{.Downloads}}<br>
         </div>
       </div>
-      <div class="metadata">
+
+      <div class="row">
+        <div class="column whole">
           {{.Description}}
+        </div>
       </div>
-      <div class="metadata">
+      <div class="row">
           <br><time>Uploaded by <a href="/user/{{.Uploader}}">{{.Uploader}}</a> on {{humanDate .Created}}</time>
       </div>
     </div><br><br>

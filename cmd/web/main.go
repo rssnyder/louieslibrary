@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"os"
 	"encoding/gob"
-
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
-
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
 	"github.com/aws/aws-sdk-go/aws"
@@ -17,10 +15,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
+// Cookie Store for user data
 var session_store *sessions.CookieStore
 
 func main() {
-	// Flags
+
+	// Command line flags for application settings
 	env							:= flag.String("env", "prod", "environment")			
 	addr 						:= flag.String("addr", ":4000", "HTTP network address")
 	html_dir 				:= flag.String("html_dir", "./ui/html", "Path to HTML templates")
@@ -35,15 +35,14 @@ func main() {
 	tlsCert 				:= flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
 	tlsKey 					:= flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
 
-
 	flag.Parse()
 
 	// Database connection
-	db := connect_db(*dsn)
+	db := ConnectDB(*dsn)
 	defer db.Close()
 
 	// s3 storage connection
-	storage := connect_storage(*storage_server, *storage_key, *storage_secret)
+	storage := ConnectStorage(*storage_server, *storage_key, *storage_secret)
 
 	// Initalize session manager
 	session_store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
@@ -74,8 +73,9 @@ func main() {
 	}
 }
 
-// connect DB connection setup
-func connect_db(dsn string) *sql.DB {
+// ConnectDB
+// Test connection to the db
+func ConnectDB(dsn string) *sql.DB {
 	// Postgres
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
@@ -88,10 +88,13 @@ func connect_db(dsn string) *sql.DB {
 		log.Fatal(err)
 	}
 
+	// Return db connection
 	return db
 }
 
-func connect_storage(url, key, secret string) *session.Session {
+// ConnectStorage
+// Create a connection to the s3 server
+func ConnectStorage(url, key, secret string) *session.Session {
 	// Configure s3 remote
 	storage_config := &aws.Config{
 		Credentials:      credentials.NewStaticCredentials(key, secret, ""),
@@ -101,5 +104,6 @@ func connect_storage(url, key, secret string) *session.Session {
 		S3ForcePathStyle: aws.Bool(true),
 	}
 
+	// Return new s3 session for starting connections
 	return session.New(storage_config)
 }

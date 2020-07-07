@@ -1,0 +1,42 @@
+{{define "page-title"}}
+  Messages
+{{end}}
+{{define "page-body"}}
+  <div class="row">
+    <div class="column third" name="Sidebar">
+      {{if .Users}}
+        {{range .Users}}
+          <a href="/messages/{{.Username}}">{{.Username}}</a><br>
+        {{end}}
+      {{end}}
+    </div>
+    <div class="column twothird" name="Sidebar">
+      <h3>Conversation with {{.DisplayUser.Username}}...</h3>
+      {{if .Messages}}
+        {{range .Messages}}
+          {{.Sender}}: {{.Content}}<br>
+        {{end}}
+      {{end}}
+      {{with .Form}}
+        <form action="/messages/{{.Reciver}}" method="POST">
+          <div>
+            <input type="hidden" name="reciver" value="{{.Reciver}}">
+          </div>
+          <div>
+            <label>Message:</label>
+            {{with .Failures.Content}}
+              <label class="error">{{.}}</label>
+            {{end}}
+            <input type="text" name="content" value="{{.Content}}">
+          </div>
+          <div>
+            <input type="submit" value="Send Message">
+          </div>
+        </form>
+      {{end}}
+    </div>
+    <div class="column right" name="Sidebar">
+      <!-- right-side -->
+    </div>
+  </div>
+{{end}}

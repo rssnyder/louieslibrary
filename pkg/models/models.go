@@ -10,7 +10,8 @@ type DB struct {
 	*sql.DB
 }
 
-// Request describes the Request structure
+// Request
+// Describe the request structure
 type Request struct {
 	ID        int
 	Requester string
@@ -20,20 +21,25 @@ type Request struct {
 	Created   time.Time
 }
 
-// Requests holds multiple Requests
+// Requests
 type Requests []*Request
 
-// User holds data on a logged in user
+// User
+// Describe the user structure
 type User struct {
-	ID        int
-	Username  string
-	Email     string
-	HashedPassword []byte
-	Role      string
-	Created   time.Time
+	ID        			int
+	Username  			string
+	Email     			string
+	HashedPassword	[]byte
+	Role      			string
+	Created   			time.Time
 }
 
-// Invite holds invite codes
+// Users
+type Users []*User
+
+// Invite
+// Describe the invite structure
 type Invite struct {
 	ID					string
 	Username 		null.String
@@ -43,10 +49,11 @@ type Invite struct {
 	Created   	time.Time
 }
 
-// Invites holds a users invites
+// Invites
 type Invites []*Invite
 
-// Book holds data on a book
+// Book
+// Describe the book structure
 type Book struct {
 	ID							string
 	VolumeID				string
@@ -68,18 +75,33 @@ type Book struct {
 	Created    			time.Time
 }
 
-// Books holds multiple books
+// Books
 type Books []*Book
 
-// Review holds a review
+// Review
+// Describe the review structure
 type Review struct {
-	ID         int
-	BookID       string
-	Username      string
-	Rating     string
-	Review      string
-	Created    time.Time
+	ID        int
+	BookID    string
+	Username	string
+	Rating    string
+	Review    string
+	Created   time.Time
 }
 
-// Books holds multiple books
+// Reviews
 type Reviews []*Review
+
+// Message
+// Describe the message structure
+type Message struct {
+	ID      int
+	Sender  string
+	Reciver	string
+	Read    string
+	Content	string
+	Created	time.Time
+}
+
+// Messages
+type Messages []*Message

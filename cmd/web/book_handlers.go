@@ -13,11 +13,7 @@ import (
 
 // ShowBook
 // Display a page with information on a single book
-// Requires an http var of volumeid for the desired book
 func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
-
-	// Load session
-	session, _ := app.Sessions.Get(r, "session-name")
 
 	// Get requested book id
 	vars := mux.Vars(r)
@@ -41,39 +37,16 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the previous flashes
-	flashes := session.Flashes("default")
-	if len(flashes) > 0 {
-
-		// Save session
-		err = session.Save(r, w)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		// Render page with flash
-		app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
-			Book:   book,
-			Form:   &forms.NewReview{},
-			Reviews: reviews,
-			Flash:  fmt.Sprintf("%v", flashes[0]),
-		})
-	} else {
-
-		// Render page without flash
-		app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
-			Book:   book,
-			Reviews: reviews,
-			Form:   &forms.NewReview{},
-			Flash:  "",
-		})
-	}
+	// Render page without flash
+	app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
+		Book:   book,
+		Reviews: reviews,
+		Form:   &forms.NewReview{},
+	})
 }
 
 // DownloadBook
 // Send the user the file for the requested book
-// Requires an http var of volumeid for the desired book
 func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
@@ -304,7 +277,6 @@ func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 // EditBook
 // Show the new book form
 // Filled with the current book data
-// Requires the volumeid var of book to edit
 func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id

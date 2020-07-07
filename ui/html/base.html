@@ -50,11 +50,25 @@
 						New Book
 					</a>
 				{{end}}
+			<a href="/about" {{if eq .Path "/about"}}class="live"{{end}}>
+				About
+			</a>
+			<a href="/messages/{{.User.Username}}" {{if eq .Path "/messages/"}}class="live"{{end}}>
+				Inbox
+			</a>
 		</nav>
 		{{end}}
-		<section>
-			{{template "page-body" .}}
-		</section>
+		<div class="row">
+			<div class="column left" name="Sidebar">
+				<!-- left-side -->
+			</div>
+			<div class="column middle" name="Sidebar">
+				{{template "page-body" .}}
+			</div>
+			<div class="column right" name="Sidebar">
+				<!-- right-side -->
+			</div>
+		</div>
 	</body>
 </html>
 {{end}}

@@ -6,6 +6,9 @@
         <div class="flash">{{.}}</div>
     {{end}}
     {{with .DisplayUser}}
+      <form action="/messages/{{.Username}}">
+        <input type="submit" value="Send Message">
+      </form>
       <table>
         <tr>
           <th>ID</th>

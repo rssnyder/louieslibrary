@@ -6,19 +6,23 @@ import (
 	"log"
 )
 
-// InsertUser creates a new user
+// InsertUser
+// Create a new user
 func (db *DB) InsertUser(name, email, password string) error {
 
+	// Empty new user id
 	var userid int
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	// Hash and salt password
+	hashed_password, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
 
 	stmt := `INSERT INTO users (username, email, password, role, created) VALUES($1, $2, $3, 'reader', timezone('utc', now())) RETURNING id`
 
-	err = db.QueryRow(stmt, name, email, hashedPassword).Scan(&userid)
+	// Create
+	err = db.QueryRow(stmt, name, email, hashed_password).Scan(&userid)
 	if err != nil {
 		return err
 	}
@@ -28,14 +32,17 @@ func (db *DB) InsertUser(name, email, password string) error {
 	return nil
 }
 
-// AuthenticateUser checks the valitity of a login request
+// AuthenticateUser
+// Checks the valitity of a login
 func (db *DB) AuthenticateUser(username, password string) (*User, error) {
+
+	// Empty user
+	u := &User{}
 
 	// Get id and password hash for given username
 	row := db.QueryRow("SELECT id, username, password, role FROM users WHERE username = $1", username)
 
-	u := &User{}
-
+	// Pull in password for comparesson
 	err := row.Scan(&u.ID, &u.Username, &u.HashedPassword, &u.Role)
 	if err == sql.ErrNoRows {
 		return &User{}, nil
@@ -53,16 +60,21 @@ func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 
 	log.Printf("User %s logged in", username)
 
+	// Return logged in user
 	return u, nil
 }
 
-// GetUser retrives user information
+// GetUser
+//  Retrive user information
 func (db *DB) GetUser(username string) (*User, error) {
+
+	// Empty user
+	u := &User{}
+
 	// Get attributes of user
 	row := db.QueryRow("SELECT id, username, role, created FROM users WHERE username = $1", username)
 
-	u := &User{}
-
+	// Grab user
 	err := row.Scan(&u.ID, &u.Username, &u.Role, &u.Created)
 	if err == sql.ErrNoRows {
 		return &User{}, nil
@@ -75,8 +87,49 @@ func (db *DB) GetUser(username string) (*User, error) {
 	return u, nil
 }
 
-// GetInvites checks the valitity of an invite code
+// GetUsers
+// Retrive user information on everyone
+func (db *DB) GetUsers() (Users, error) {
+
+	// Empty user
+	users := Users{}
+
+	// Get attributes of user
+	rows, err := db.Query("SELECT username, role FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Get all the matching requets
+	for rows.Next() {
+		u := &User{}
+
+		// Pull data into request
+		err := rows.Scan(&u.Username, &u.Role)
+		if err != nil {
+			return nil, err
+		}
+
+		// Add invite to collection
+		users = append(users, u)
+	}
+
+	// Catch sql errors
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// GetInvites
+// Get a users invites
 func (db *DB) GetInvites(creator string) (Invites, error) {
+
+	// Empty invite collection
+	invites := Invites{}
+
 	// Query statement
 	stmt := `SELECT id, code, username, creator, status, created FROM invites WHERE creator = $1 ORDER BY created DESC`
 
@@ -85,10 +138,7 @@ func (db *DB) GetInvites(creator string) (Invites, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
-
-	invites := Invites{}
 
 	// Get all the matching requets
 	for rows.Next() {
@@ -100,9 +150,11 @@ func (db *DB) GetInvites(creator string) (Invites, error) {
 			return nil, err
 		}
 
+		// Add invite to collection
 		invites = append(invites, i)
 	}
 
+	// Catch sql errors
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
@@ -110,13 +162,15 @@ func (db *DB) GetInvites(creator string) (Invites, error) {
 	return invites, nil
 }
 
-// ValidateInvite checks the valitity of an invite code
+// ValidateInvite
+// Check the valitity of an invite code
 func (db *DB) ValidateInvite(invite_code string) (bool, error) {
+
+	// Used or not
+	var status bool
 
 	// Get id and password hash for given username
 	row := db.QueryRow("SELECT status FROM invites WHERE code = $1", invite_code)
-
-	var status bool
 
 	err := row.Scan(&status)
 	if err == sql.ErrNoRows {
@@ -128,13 +182,16 @@ func (db *DB) ValidateInvite(invite_code string) (bool, error) {
 	return status, nil
 }
 
-// CreateInvite creates a new invite
+// CreateInvite
+// Add a new invite
 func (db *DB) CreateInvite(creator, code string) error {
 
+	// Empty invite id
 	var id int
 
 	stmt := `INSERT INTO invites (code, creator, status, created) VALUES($1, $2, FALSE, timezone('utc', now())) RETURNING id`
 
+	// Add invite
 	err := db.QueryRow(stmt, code, creator).Scan(&id)
 	if err == sql.ErrNoRows {
 		return err
@@ -145,9 +202,11 @@ func (db *DB) CreateInvite(creator, code string) error {
 	return nil
 }
 
-// FillInvite uses an invite for a new user
+// FillInvite
+// Use an invite, invalidate for future use
 func (db *DB) FillInvite(username, code string) error {
 
+	// The empty used invite
 	var id int
 
 	stmt := `UPDATE invites SET username = $1, activated = timezone('utc', now()), status = TRUE WHERE code = $2 RETURNING id`

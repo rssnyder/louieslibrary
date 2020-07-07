@@ -6,14 +6,16 @@ import (
 	"log"
 )
 
-// NewRequest models the request structure
+// NewRequest
+// Model the request structure
 type NewRequest struct {
 	Requester	string
 	Title     string
 	Failures  map[string]string
 }
 
-// Valid makes sure the the fields are correctly formatted
+// Valid
+// Make sure request has nessesary attributes
 func (f *NewRequest) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -35,7 +37,8 @@ func (f *NewRequest) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// NewUser models the user signup
+// NewUser
+// Model the base user structure
 type NewUser struct {
 	Username 		string
 	Email    		string
@@ -44,7 +47,8 @@ type NewUser struct {
 	Failures 		map[string]string
 }
 
-// Valid makes sure the the fields are correctly formatted
+// Valid
+// Make sure user has nessesary attributes
 func (f *NewUser) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -84,7 +88,8 @@ func (f *NewUser) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// Book holds data on a book
+// Book
+// Model the book structure
 type NewBook struct {
 	ID 							string
 	VolumeID				string
@@ -105,7 +110,8 @@ type NewBook struct {
 	Failures    		map[string]string
 }
 
-// Valid makes sure the the fields are correctly formatted
+// Valid
+// Make sure book has nessesary attributes
 func (f *NewBook) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -220,7 +226,8 @@ func (f *NewBook) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// Review holds data on a review
+// Review
+// Model the review structure
 type NewReview struct {
 	ID        int
 	BookID    string
@@ -230,7 +237,8 @@ type NewReview struct {
 	Failures  map[string]string
 }
 
-// Valid makes sure the the fields are correctly formatted
+// Valid
+// Make sure review has nessesary attributes
 func (f *NewReview) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -261,4 +269,13 @@ func (f *NewReview) Valid() bool {
 		log.Printf("Review submitted missing review")
 	}
 	return len(f.Failures) == 0
+}
+
+// NewMessage
+// Model the base message structure
+type NewMessage struct {
+	Sender 		string
+	Reciver   string
+	Content 	string
+	Failures	map[string]string
 }

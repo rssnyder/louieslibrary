@@ -2,22 +2,25 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/gorilla/mux"
 )
 
-// Routes defines site routes
+// Routes
+// Define the site routes
 func (app *App) Routes() *mux.Router {
+
+	// Create a new router
 	r := mux.NewRouter()
+
+	// Homepage
 	r.Handle("/", app.RequireLogin(http.HandlerFunc(app.Home))).Methods("GET")
+	r.Handle("/about", app.RequireLogin(http.HandlerFunc(app.About))).Methods("GET")
 
 	// Requests
 	r.Handle("/request/all", app.RequireLogin(http.HandlerFunc(app.ListAllRequests))).Methods("GET")
 	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.NewRequest))).Methods("GET")
 	r.Handle("/request/new", app.RequireLogin(http.HandlerFunc(app.CreateRequest))).Methods("POST")
 	r.Handle("/request/{id}", app.RequireLogin(http.HandlerFunc(app.ShowRequest))).Methods("GET")
-
-	// Fill requests
 	r.Handle("/request/{id}/fill", app.RequireWriter(http.HandlerFunc(app.FillRequest))).Methods("POST")
 
 	// Books
@@ -28,17 +31,18 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/book/collect/{volumeid}", app.RequireLogin(http.HandlerFunc(app.AddToCollection))).Methods("POST")
 	r.Handle("/book/{volumeid}", app.RequireLogin(http.HandlerFunc(app.ShowBook))).Methods("GET")
 	r.Handle("/book/{volumeid}", app.RequireLogin(http.HandlerFunc(app.DownloadBook))).Methods("POST")
-	
-
-	// Adding books
 	r.Handle("/write/book", app.RequireWriter(http.HandlerFunc(app.NewBook))).Methods("GET")
 	r.Handle("/write/book", app.RequireWriter(http.HandlerFunc(app.CreateBook))).Methods("POST")
+
+	// Messages
+	r.Handle("/messages/{reciver}", app.RequireLogin(http.HandlerFunc(app.Messages))).Methods("GET")
+	r.Handle("/messages/{reciver}", app.RequireLogin(http.HandlerFunc(app.CreateMessage))).Methods("POST")
 
 	// Youtube
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.NewPlaylist))).Methods("GET")
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")
 
-	// Unlock user methods
+	// Unlocked user methods
 	r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")
 	r.HandleFunc("/user/signup", app.CreateUser).Methods("POST")
 	r.HandleFunc("/user/login", app.LoginUser).Methods("GET")
@@ -47,14 +51,17 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/user/invite/create", app.RequireLogin(http.HandlerFunc(app.CreateInviteCode))).Methods("POST")
 	r.Handle("/user/{username}", app.RequireLogin(http.HandlerFunc(app.ShowUser))).Methods("GET")
 
+	// Hosting static files
+
 	// Youtube files
 	ytServer := http.FileServer(http.Dir(app.YoutubeDir))
 	r.PathPrefix("/youtube/").Handler(http.StripPrefix("/youtube/", ytServer))
 
-	// Fileserver for css and js files
+	// CSS and HTML files
 	fileServer := http.FileServer(http.Dir(app.StaticDir))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fileServer))
 
+	// Global middleware
 	r.Use(SecureHeaders)
 	r.Use(LogRequest)
 
