@@ -21,7 +21,7 @@ jobs:
         host: ${{ secrets.TARGET_HOSTNAME }}
         username: ${{ secrets.TARGET_SSH_USER }}
         key: ${{ secrets.TARGET_SSH_KEY }}
-        source: dist/*
+        source: "library,ui/*"
         strip_components: 1
         target: /home/${{ secrets.TARGET_SSH_USER }}/
     # - uses: appleboy/ssh-action@master
