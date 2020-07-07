@@ -1,0 +1,32 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Check + Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+    - uses: actions/checkout@v2
+    - run: make build
+    - uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.TARGET_HOSTNAME }}
+        username: ${{ secrets.TARGET_SSH_USER }}
+        key: ${{ secrets.TARGET_SSH_KEY }}
+        source: dist/*
+        strip_components: 1
+        target: /home/${{ secrets.TARGET_SSH_USER }}/
+    # - uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ secrets.TARGET_HOSTNAME }}
+    #     username: ${{ secrets.TARGET_SSH_USER }}
+    #     key: ${{ secrets.TARGET_SSH_KEY }}
+    #     script: sudo systemctl restart library
