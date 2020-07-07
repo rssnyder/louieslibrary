@@ -8,18 +8,23 @@ import (
 	"archive/zip"
 	"os"
 	"crypto/rand"
-
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
 )
 
-// LoggedIn gets the logged in status, also returns user object
+// LoggedIn
+// Get logged in status
+// Pass along user data if true
 func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
+
+	// Empty user struct
+	var user = &models.User{}
+
+	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
 	// Get user from session
-	loggedIn := session.Values["user"]
-	var user = &models.User{}
-	user, ok := loggedIn.(*models.User)
+	logged_in := session.Values["user"]
+	user, ok := logged_in.(*models.User)
 
 	// Test if user exists
 	if !ok {
@@ -40,24 +45,29 @@ func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
 	return true, user
 }
 
+// ZipDirectory
+// Compress a directory on the disk
+// Return the name of the zip file
 func ZipDirectory(dirPath string) (string, error) {
+
+	// Empty output
 	var output string
 
 	// Get a Buffer to Write To
-	outFile, err := os.Create(dirPath + ".zip")
+	out_file, err := os.Create(dirPath + ".zip")
 	if err != nil {
 			return output, err
 	}
-	defer outFile.Close()
+	defer out_file.Close()
 
 	// Create a new zip archive.
-	writer := zip.NewWriter(outFile)
+	writer := zip.NewWriter(out_file)
 
 	// Add all file sin directory to zip
 	files, err := ioutil.ReadDir(dirPath)
 	for _, file := range files {
-		fullPath := dirPath + "/" + file.Name()
-		dat, err := ioutil.ReadFile(fullPath)
+		full_path := dirPath + "/" + file.Name()
+		dat, err := ioutil.ReadFile(full_path)
 		if err != nil {
 			return output, err
 		}
@@ -73,26 +83,33 @@ func ZipDirectory(dirPath string) (string, error) {
 		}
 	}
 
+	// Attempt to finish the file
 	err = writer.Close()
 	if err != nil {
 		return output, err
 	}
 
+	// Return the zip file location
 	return dirPath + ".zip", nil
 }
 
+// CreateUUID
+// Generate a guid
 func CreateUUID() (string, error) {
+
+	// Empty guid
 	var uuid string
 
-	// Create UUId
+	// Create UUID
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
 		return uuid, errors.New("Unable to generate UUID")
 	}
 
-	uuid = fmt.Sprintf("%x-%x-%x-%x-%x",
-			b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	// Format giud
+	uuid = fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 
+	// Return the guid
 	return uuid, nil
 }

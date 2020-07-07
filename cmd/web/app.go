@@ -6,7 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
-// App structure
+// App
+// This defines the structure of the application
+// and the things it requires to operate
 type App struct {
 	HTMLDir   	string
 	StaticDir 	string

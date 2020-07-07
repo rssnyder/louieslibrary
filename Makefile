@@ -12,4 +12,4 @@ package:
 
 .PHONY: deploy
 deploy:
-				rsync -varP library.zip ec2:
+				rsync -varP library.zip linode:

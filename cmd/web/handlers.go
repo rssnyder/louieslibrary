@@ -4,8 +4,10 @@ import (
 	"net/http"
 )
 
-// Home page of site
+// Home
+// Display the home page of the sites
 func (app *App) Home(w http.ResponseWriter, r *http.Request) {
+
 	// 404 if not truly root
 	if r.URL.Path != "/" {
 		app.NotFound(w)
@@ -26,6 +28,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Display home page with books and requests
 	app.RenderHTML(w, r, "home.page.html", &HTMLData{
 		Requests: requests,
 		Books:    books,

@@ -8,12 +8,14 @@ import (
 	"io/ioutil"
 	"github.com/gorilla/mux"
 	"path/filepath"
-
 	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
 )
 
-// ShowBook displays a single book
+// ShowBook
+// Display a page with information on a single book
+// Requires an http var of volumeid for the desired book
 func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -39,8 +41,10 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the previous flashes, if any.
-	if flashes := session.Flashes("default"); len(flashes) > 0 {
+	// Get the previous flashes
+	flashes := session.Flashes("default")
+	if len(flashes) > 0 {
+
 		// Save session
 		err = session.Save(r, w)
 		if err != nil {
@@ -48,6 +52,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Render page with flash
 		app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
 			Book:   book,
 			Form:   &forms.NewReview{},
@@ -55,6 +60,8 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 			Flash:  fmt.Sprintf("%v", flashes[0]),
 		})
 	} else {
+
+		// Render page without flash
 		app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
 			Book:   book,
 			Reviews: reviews,
@@ -64,7 +71,11 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DownloadBook
+// Send the user the file for the requested book
+// Requires an http var of volumeid for the desired book
 func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
+
 	// Get requested book id
 	vars := mux.Vars(r)
 	id := vars["volumeid"]
@@ -80,32 +91,40 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Perform nessesary actions on book being downloaded
 	app.DB.DownloadBook(book.VolumeID, book.Downloads + 1)
 
-	// Server book file
+	// Present book file to user
 	app.ServeFile(w, app.BookBucket, fmt.Sprintf("%s.mobi", book.VolumeID), fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
 }
 
-// NewBook displays the new book upload form
+// NewBook
+// Display the new book form
 func (app *App) NewBook(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "newbook.page.html", &HTMLData{
 		Form: &forms.NewBook{},
 	})
 }
 
-// CreateBook uses a form to create a new book
+// CreateBook
+// Build the new book structure
+// If only volumeid given, grab data from books.google api
+// Otherwise user given information
 func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
-	//Limit upload to 10mb
-	r.ParseMultipartForm(10 << 20)
+	//Limit upload to 50mb
+	r.ParseMultipartForm(50 << 20)
 
-	// Get uploader
+	// Get current user
 	_, user := app.LoggedIn(r)
 
-	// If no title, try and get volume information
+	// Grab information from books.google if no title given
 	if r.PostForm.Get("title") == "" {
+
+		// Grab volumeid from form
 		book_info := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
 
 		// Model the new book on api feedback
@@ -127,10 +146,12 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 			ImageLink:			fmt.Sprint(book_info.Data.ImageLinks.Small),
 		}
 
+		// Display the new book form with the retrived data
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
 
+	// Model the new book on the information from the form
 	form := &forms.NewBook{
 		VolumeID:				r.PostForm.Get("volumeid"),
 		Title:       		r.PostForm.Get("title"),
@@ -149,7 +170,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		ImageLink:			r.PostForm.Get("imagelink"),
 	}
 
-	// Validate form
+	// Validate the new book form
 	if !form.Valid() {
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
@@ -164,20 +185,19 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// read all of the contents of our uploaded file into a
-	// byte array
-	fileBytes, err := ioutil.ReadAll(file)
+	// Read contents of uploaded file
+	file_bytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
 
-	// Get file format
+	// Get uploaded file format
 	format := filepath.Ext(handler.Filename)
 
 	// Send book to storage server
-	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.%s", form.VolumeID, format), fileBytes)
+	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.%s", form.VolumeID, format), file_bytes)
 	if err != nil {
 		app.ServerError(w, err)
 	}
@@ -189,7 +209,6 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save success message
 	session.AddFlash("Your book was added successfully!", "default")
 
 	// Save session
@@ -199,11 +218,14 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Direct to new book page
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
 
-// CreateReview submits a review for a book
+// CreateReview
+// Build the new review structure and submit
 func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -214,7 +236,7 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get uploader
+	// Get the current user
 	_, user := app.LoggedIn(r)
 
 	// Model the new review on html form
@@ -225,9 +247,9 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 		Review:    r.PostForm.Get("review"),
 	}
 
-	// Validate form
+	// Validate the new review form
 	if !form.Valid() {
-		// Save success message
+
 		session.AddFlash("Unable to submit your review.", "default")
 
 		// Save session
@@ -237,6 +259,7 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Send back to book page
 		http.Redirect(w, r, fmt.Sprintf("/book/%s", r.PostForm.Get("bookid")), http.StatusSeeOther)
 		return
 	}
@@ -248,7 +271,6 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save success message
 	session.AddFlash("Your review was added successfully!", "default")
 
 	// Save session
@@ -258,11 +280,14 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Send back to book page
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.BookID), http.StatusSeeOther)
 }
 
-// ListAllBooks does what it says
+// ListAllBooks
+// Display a list off all books
 func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
+
 	// Get the books
 	books, err := app.DB.LatestBooks(1000)
 	if err != nil {
@@ -270,18 +295,23 @@ func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Display page with all books
 	app.RenderHTML(w, r, "showbooks.page.html", &HTMLData{
 		Books:    books,
 	})
 }
 
-// EditBook lets a writer make a change to a book
+// EditBook
+// Show the new book form
+// Filled with the current book data
+// Requires the volumeid var of book to edit
 func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
+
 	// Get requested book id
 	vars := mux.Vars(r)
 	id := vars["volumeid"]
 
-	// Get book
+	// Get current book data
 	book, err := app.DB.GetBook(id)
 	if err != nil {
 		app.ServerError(w, err)
@@ -311,14 +341,16 @@ func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
 		ImageLink:			book.ImageLink,
 	}
 
+	// Display the new book page with the current data
 	app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
-	return
 }
 
+// UpdateBook
+// Process a new book form and update an existing book
 func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
-	//Limit upload to 10mb
-	r.ParseMultipartForm(10 << 20)
+	//Limit upload to 50mb
+	r.ParseMultipartForm(50 << 20)
 
 	form := &forms.NewBook{
 		VolumeID:				r.PostForm.Get("volumeid"),
@@ -338,26 +370,34 @@ func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		ImageLink:			r.PostForm.Get("imagelink"),
 	}
 
-	// Validate form
+	// Validate new book form
 	if !form.Valid() {
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
 	
+	// Update the book with the new information
 	app.DB.UpdateBook(form)
 
+	// Display the edited book page
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
 
+// AddToCollection
+// Add a book to the current users collection
+// Requires the target books volumeid as a var
 func (app *App) AddToCollection(w http.ResponseWriter, r *http.Request) {
+
 	// Get requested book id
 	vars := mux.Vars(r)
 	id := vars["volumeid"]
 
-	// Get user
+	// Get current user
 	_, user := app.LoggedIn(r)
 
+	// Add book to users collection
 	app.DB.CollectBook(user.Username, id)
 
+	// Display the added books page
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", id), http.StatusSeeOther)
 }
