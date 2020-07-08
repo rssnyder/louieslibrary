@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 )
 
 // HTMLData models the page data
@@ -15,14 +15,13 @@ type HTMLData struct {
 	Request  		*models.Request
 	Requests 		[]*models.Request
 	User     		*models.User
-	Users				[]*models.User
 	DisplayUser	*models.User
 	Book     		*models.Book
 	Books    		[]*models.Book
 	Reviews  		[]*models.Review
 	Invites  		[]*models.Invite
 	Messages		[]*models.Message
-	Friends			[]*models.Message
+	Threads			[]*models.Message
 	Path     		string
 	Form     		interface{}
 	Flash    		string

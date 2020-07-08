@@ -4,9 +4,10 @@
 {{define "page-body"}}
   <div class="row">
     <div class="column third" name="Sidebar">
-      {{if .Users}}
-        {{range .Users}}
-          <a href="/messages/{{.Username}}">{{.Username}}</a><br>
+      {{if .Threads}}
+        {{range .Threads}}
+          {{if .Read}}!{{end}}
+            <a href="/messages/{{.Sender}}">{{.Sender}}</a><br>
         {{end}}
       {{end}}
     </div>

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	//"strconv"
 	//"strings"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
+	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
 )
 
@@ -33,12 +33,33 @@ func (app *App) Messages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get users for side bar
-	users, err := app.DB.GetUsers()
-	if err != nil {
-		app.NotFound(w)
-		return
+	// Get existing threads
+	threads, err := app.DB.GetThreads(user.Username)
+
+	// Get unread messages
+	unread, err := app.DB.GetUnopened(user.Username)
+
+	// Flag threads with unread messages
+	// for _, closed := range unread {
+	// 	for _, thread := range threads {
+	// 		if closed.Sender == thread.Sender {
+	// 			thread.Read = false
+	// 			break
+	// 		} else {
+	// 			thread.Read = true
+	// 		}
+	// 	}
+	// }
+
+	for _, thread := range threads {
+		for _, closed := range unread {
+			if closed.Sender == thread.Sender {
+				thread.Read = true
+				break
+			}
+		}
 	}
+
 
 	// Model the new message form based on html form
 	form := &forms.NewMessage{
@@ -48,7 +69,7 @@ func (app *App) Messages(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "messages.page.html", &HTMLData{
 		Messages: messages,
 		DisplayUser: display_user,
-		Users: users,
+		Threads: threads,
 		Form: form,
 	})
 }

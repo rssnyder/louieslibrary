@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
+	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 	"github.com/gorilla/mux"
 )
 

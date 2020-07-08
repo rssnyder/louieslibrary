@@ -8,7 +8,7 @@ import (
 	"archive/zip"
 	"os"
 	"crypto/rand"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 )
 
 // LoggedIn
@@ -112,15 +112,4 @@ func CreateUUID() (string, error) {
 
 	// Return the guid
 	return uuid, nil
-}
-
-// AppendIfUnique
-// Append only if item is unique
-func AppendIfUnique(slice []string, i string) []string {
-	for _, ele := range slice {
-		if ele == i {
-			return slice
-		}
-	}
-	return append(slice, i)
 }

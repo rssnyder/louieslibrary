@@ -98,7 +98,7 @@ type Message struct {
 	ID      int
 	Sender  string
 	Reciver	string
-	Read    string
+	Read    bool
 	Content	string
 	Created	time.Time
 }

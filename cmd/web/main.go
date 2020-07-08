@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"encoding/gob"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/models"
+	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
 	"github.com/aws/aws-sdk-go/aws"

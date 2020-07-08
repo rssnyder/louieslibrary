@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	"log"
-	"github.com/Mr-Schneider/request.thecornelius.duckdns.org/pkg/forms"
+	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 )
 
 // GetBook
