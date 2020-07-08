@@ -48,23 +48,17 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	// Add the current path to the data
 	data.Path = r.URL.Path
 
-	// Get the previous flash
-	if flashes := session.Flashes("default"); len(flashes) > 0 {
-
-		// Save session
-		err := session.Save(r, w)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		data.Flash = fmt.Sprintf("%v", flashes[0])
-	}
-
 	// Check logged in status
 	user := &models.User{}
 	_, user = app.LoggedIn(r)
 	data.User = user
+
+	// Get unread messages
+	unread, err := app.DB.GetUnopened(user.Username)
+	if len(unread) != 0 {
+		session.AddFlash("You have new messages!", "default")
+	}
+
 
 	// Render the base template with target page
 	files := []string{
@@ -82,6 +76,19 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	if err != nil {
 		app.ServerError(w, err)
 		return
+	}
+
+	// Get the previous flash
+	if flashes := session.Flashes("default"); len(flashes) > 0 {
+
+		// Save session
+		err := session.Save(r, w)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		data.Flash = fmt.Sprintf("%v", flashes[0])
 	}
 
 	// Write template to buffer, then send buffer
