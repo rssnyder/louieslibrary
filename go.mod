@@ -8,5 +8,6 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/sessions v1.2.0
 	github.com/lib/pq v1.7.0
-	gopkg.in/guregu/null.v4 v4.0.0 // indirect
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+	gopkg.in/guregu/null.v4 v4.0.0
 )

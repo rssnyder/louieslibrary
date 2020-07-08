@@ -2,35 +2,32 @@
   User
 {{end}}
 {{define "page-body"}}
-    {{with .Flash}}
-        <div class="flash">{{.}}</div>
+  {{with .DisplayUser}}
+    <form action="/messages/{{.Username}}">
+      <input type="submit" value="Send Message">
+    </form>
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Joined</th>
+      </tr>
+      <tr>
+        <td>{{.ID}}</td>
+        <td>{{.Username}}</td>
+        <td>{{.Role}}</td>
+        <td>{{humanDate .Created}}</td>
+      </tr>
+    </table>
+  {{end}}
+  {{if .Books}}
+  <br>
+    {{range .Books}}
+      <a href="/book/{{.VolumeID}}"><img src="{{.ImageLink}}" width="100" height="170"></a>
     {{end}}
-    {{with .DisplayUser}}
-      <form action="/messages/{{.Username}}">
-        <input type="submit" value="Send Message">
-      </form>
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Role</th>
-          <th>Joined</th>
-        </tr>
-        <tr>
-          <td>{{.ID}}</td>
-          <td>{{.Username}}</td>
-          <td>{{.Role}}</td>
-          <td>{{humanDate .Created}}</td>
-        </tr>
-      </table>
-    {{end}}
-    {{if .Books}}
-    <br>
-      {{range .Books}}
-        <a href="/book/{{.VolumeID}}"><img src="{{.ImageLink}}" width="100" height="170"></a>
-      {{end}}
-    {{end}}
-    {{if .Reviews}}
+  {{end}}
+  {{if .Reviews}}
     {{range .Reviews}}
       <br><br>
       <div class="review">

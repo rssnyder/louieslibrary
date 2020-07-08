@@ -2,9 +2,6 @@
   Book #{{.Book.ID}}
 {{end}}
 {{define "page-body"}}
-  {{with .Flash}}
-    <div class="flash">{{.}}</div>
-  {{end}}
   {{if eq .User.Role "writer"}}
     <a href="/book/edit/{{.Book.VolumeID}}">Edit Book</a>
   {{end}}

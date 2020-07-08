@@ -2,9 +2,6 @@
   Request #{{.Request.ID}}
 {{end}}
 {{define "page-body"}}
-  {{with .Flash}}
-    <div class="flash">{{.}}</div>
-  {{end}}
   {{with .Request}}
     <div class="request">
       <div class="metadata">

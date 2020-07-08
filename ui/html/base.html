@@ -63,6 +63,9 @@
 				<!-- left-side -->
 			</div>
 			<div class="column middle" name="Sidebar">
+				{{with .Flash}}
+					<div class="flash">{{.}}</div>
+				{{end}}
 				{{template "page-body" .}}
 			</div>
 			<div class="column right" name="Sidebar">
