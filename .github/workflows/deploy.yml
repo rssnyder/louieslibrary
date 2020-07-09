@@ -28,4 +28,6 @@ jobs:
         host: ${{ secrets.TARGET_HOSTNAME }}
         username: ${{ secrets.TARGET_SSH_USER }}
         key: ${{ secrets.TARGET_SSH_KEY }}
-        script: sudo systemctl restart library.service
+        script: |
+          sudo setcap CAP_NET_BIND_SERVICE=+eip /home/librarian/library
+          sudo systemctl restart library.service
