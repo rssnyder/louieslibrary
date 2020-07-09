@@ -37,11 +37,17 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Render page without flash
+	// Get current user
+	_, user := app.LoggedIn(r)
+
+	// See if user has collected book
+	book.Collected = app.DB.GetCollectionItem(user.Username, id)
+
+	// Render page
 	app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
-		Book:   book,
-		Reviews: reviews,
-		Form:   &forms.NewReview{},
+		Book:   	book,
+		Reviews: 	reviews,
+		Form:   	&forms.NewReview{},
 	})
 }
 

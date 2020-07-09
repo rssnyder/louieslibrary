@@ -146,6 +146,23 @@ func (db *DB) CollectBook(username, id string) {
 	log.Printf("%s collected book %s", username, id)
 }
 
+// GetCollectionItem
+// Get a book from a users collection
+func (db *DB) GetCollectionItem(username, id string) bool {
+
+	var vol int
+
+	// Query statement
+	stmt := `SELECT volumeid FROM collection WHERE username = $1 AND volumeid = $2`
+
+	err := db.QueryRow(stmt, username, id).Scan(&vol)
+	if err == sql.ErrNoRows {
+		return false
+	}
+
+	return true
+}
+
 // GetCollection
 // Get all the books in a users collection
 func (db *DB) GetCollection(username string) (Books, error) {

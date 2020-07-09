@@ -72,6 +72,7 @@ type Book struct {
 	ISBN13					string
 	ImageLink				string
 	Downloads				int
+	Collected				bool
 	Created    			time.Time
 }
 
