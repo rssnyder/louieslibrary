@@ -6,15 +6,14 @@
     <div class="column third ridge" name="Sidebar">
       {{if .Threads}}
         {{range .Threads}}
-          {{if .Read}}!{{end}}
-            <a href="/messages/{{.Sender}}">{{.Sender}}</a><br>
+          <a href="/messages/{{.Sender}}">{{.Sender}}</a><div class="newmessage floatright">{{if .Read}}New Message!{{end}}</div><br>
         {{end}}
       {{end}}
     </div>
     <div class="column twothird ridge chatbox" id="chat">
       {{if .Messages}}
         {{range .Messages}}
-          <div class="chatbubble" id="{{.Sender}}">{{.Sender}}: {{.Content}}<br>{{humanDate .Created}}</div><br>
+          <div class="chatbubble" id="{{.Sender}}">{{.Sender}}: {{.Content}}<div class="floatright">{{humanDate .Created}}</div></div><br>
         {{end}}
       {{end}}
       {{with .Form}}

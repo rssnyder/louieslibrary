@@ -392,6 +392,10 @@ p.ridge {
   float: left;
 }
 
-.right {
+.floatright {
   float: right;
+}
+
+.newmessage {
+  background: #00f014;
 }
