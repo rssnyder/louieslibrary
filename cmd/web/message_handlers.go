@@ -111,8 +111,6 @@ func (app *App) CreateMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.AddFlash("Your message was saved successfully!", "default")
-
 	// Save session
 	err = session.Save(r, w)
 	if err != nil {

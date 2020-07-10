@@ -365,14 +365,33 @@ p.ridge {
   margin: auto;
 }
 
-#userbubble {
+.chatbubble {
   border-radius: 25px;
-  background: #0dacdd;
   padding: 20px; 
+}
+
+.friend {
+  background: #00f014;
+}
+
+.self {
+  background: #0dacdd;
 }
 
 .chatbox {
   /* position: relative; */
   height:600px;
   overflow: scroll
+}
+
+.time {
+  color: #aaa;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
 }

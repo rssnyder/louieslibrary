@@ -14,7 +14,7 @@
     <div class="column twothird ridge chatbox" id="chat">
       {{if .Messages}}
         {{range .Messages}}
-          <div class="chat" id="userbubble">{{.Sender}}: {{.Content}}</div><br>
+          <div class="chatbubble" id="{{.Sender}}">{{.Sender}}: {{.Content}}<br>{{humanDate .Created}}</div><br>
         {{end}}
       {{end}}
       {{with .Form}}
@@ -39,7 +39,19 @@
     </div>
   </div>
   <script>
+    // Start chat at the bottom of the window
     var objDiv = document.getElementById("chat");
     objDiv.scrollTop = objDiv.scrollHeight;
+
+    // Make sent/recived messages different
+    uri_split = location.href.split("/");
+    friend = uri_split[uri_split.length - 1]
+    for (x of document.getElementsByClassName("chatbubble")) {
+      if (x.id == friend) {
+        x.className += " friend"
+      } else {
+        x.className += " self"
+      }
+    }
   </script>
 {{end}}
