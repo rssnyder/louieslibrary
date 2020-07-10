@@ -3,7 +3,7 @@
 {{end}}
 {{define "page-body"}}
   <div class="row">
-    <div class="column third" name="Sidebar">
+    <div class="column third ridge" name="Sidebar">
       {{if .Threads}}
         {{range .Threads}}
           {{if .Read}}!{{end}}
@@ -11,11 +11,10 @@
         {{end}}
       {{end}}
     </div>
-    <div class="column twothird" name="Sidebar">
-      <h3>Conversation with {{.DisplayUser.Username}}...</h3>
+    <div class="column twothird ridge chatbox" id="chat">
       {{if .Messages}}
         {{range .Messages}}
-          {{.Sender}}: {{.Content}}<br>
+          <div class="chat" id="userbubble">{{.Sender}}: {{.Content}}</div><br>
         {{end}}
       {{end}}
       {{with .Form}}
@@ -24,7 +23,6 @@
             <input type="hidden" name="reciver" value="{{.Reciver}}">
           </div>
           <div>
-            <label>Message:</label>
             {{with .Failures.Content}}
               <label class="error">{{.}}</label>
             {{end}}
@@ -40,4 +38,8 @@
       <!-- right-side -->
     </div>
   </div>
+  <script>
+    var objDiv = document.getElementById("chat");
+    objDiv.scrollTop = objDiv.scrollHeight;
+  </script>
 {{end}}

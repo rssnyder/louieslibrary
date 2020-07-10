@@ -359,3 +359,20 @@ p.ridge {
   border-style: ridge;
   margin: auto;
 }
+
+.ridge {
+  border-style: ridge;
+  margin: auto;
+}
+
+#userbubble {
+  border-radius: 25px;
+  background: #0dacdd;
+  padding: 20px; 
+}
+
+.chatbox {
+  /* position: relative; */
+  height:600px;
+  overflow: scroll
+}

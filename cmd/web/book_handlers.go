@@ -370,11 +370,18 @@ func (app *App) AddToCollection(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["volumeid"]
 
+	// Parse the post data
+	err := r.ParseForm()
+	if err != nil {
+		app.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
 	// Get current user
 	_, user := app.LoggedIn(r)
 
 	// Add book to users collection
-	app.DB.CollectBook(user.Username, id)
+	app.DB.CollectBook(user.Username, r.PostForm.Get("year"), id)
 
 	// Display the added books page
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", id), http.StatusSeeOther)

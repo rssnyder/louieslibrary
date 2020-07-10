@@ -136,12 +136,12 @@ func (db *DB) UpdateBook(book *forms.NewBook) (int, error) {
 
 // CollectBook
 // Add a book to a users collection
-func (db *DB) CollectBook(username, id string) {
+func (db *DB) CollectBook(username, year, id string) {
 
 	// Query statement
-	stmt := `INSERT INTO collection (username, volumeid, year, created) VALUES ($1, $2, '2020', timezone('utc', now()))`
+	stmt := `INSERT INTO collection (username, volumeid, year, created) VALUES ($1, $3, $2, timezone('utc', now()))`
 
-	db.QueryRow(stmt, username, id)
+	db.QueryRow(stmt, username, year, id)
 
 	log.Printf("%s collected book %s", username, id)
 }
@@ -169,7 +169,7 @@ func (db *DB) GetCollection(username string) (Books, error) {
 
 	// Query statement
 	stmt := `SELECT c.volumeid id, b.title, b.imagelink, c.year FROM collection c 
-		INNER JOIN books b ON c.volumeid = b.volumeid AND c.username = $1`
+		INNER JOIN books b ON c.volumeid = b.volumeid AND c.username = $1 ORDER BY c.year DESC`
 
 	// Execute query
 	rows, err := db.Query(stmt, username)

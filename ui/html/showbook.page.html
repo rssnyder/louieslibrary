@@ -30,6 +30,10 @@
           {{if not .Collected}}
             <form action="/book/collect/{{.VolumeID}}" method="POST">
               <input type="submit" value="Add to Collection">
+              <select id="year" name="year">
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+              </select>
             </form>
           {{end}}
           Downloads: {{.Downloads}}<br>
