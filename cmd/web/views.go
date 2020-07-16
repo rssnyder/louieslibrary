@@ -1,30 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
 	"time"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 )
 
 // HTMLData models the page data
 type HTMLData struct {
-	Request  		*models.Request
-	Requests 		[]*models.Request
-	User     		*models.User
-	DisplayUser	*models.User
-	Book     		*models.Book
-	Books    		[]*models.Book
-	Reviews  		[]*models.Review
-	Invites  		[]*models.Invite
-	Messages		[]*models.Message
-	Threads			[]*models.Message
-	Path     		string
-	Form     		interface{}
-	Flash    		string
+	Request     *models.Request
+	Requests    []*models.Request
+	User        *models.User
+	DisplayUser *models.User
+	Book        *models.Book
+	Books       []*models.Book
+	Reviews     []*models.Review
+	Invites     []*models.Invite
+	Messages    []*models.Message
+	Threads     []*models.Message
+	Path        string
+	Form        interface{}
+	Flash       string
 }
 
 // humanDate
@@ -58,7 +60,6 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	if len(unread) != 0 {
 		session.AddFlash("You have new messages!", "default")
 	}
-
 
 	// Render the base template with target page
 	files := []string{
@@ -100,4 +101,19 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	}
 
 	buf.WriteTo(w)
+}
+
+// JSONResponse sends a response in json format
+func JSONResponse(w http.ResponseWriter, code int, output interface{}) {
+
+	// Convert our interface to JSON
+	response, _ := json.Marshal(output)
+
+	// Set the content type to json for browsers
+	w.Header().Set("Content-Type", "application/json")
+
+	// Our response code
+	w.WriteHeader(code)
+
+	w.Write(response)
 }

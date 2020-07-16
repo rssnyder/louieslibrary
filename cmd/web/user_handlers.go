@@ -1,67 +1,80 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/Mr-Schneider/louieslibrary/pkg/models"
+	"github.com/google/go-cmp/cmp"
 	"github.com/gorilla/mux"
 )
 
-// SignupUser
-// Display the signup form
-func (app *App) SignupUser(w http.ResponseWriter, r *http.Request) {
-	app.RenderHTML(w, r, "signup.page.html", &HTMLData{
-		Form: &forms.NewUser{},
-	})
+// UserLogin holds login data
+type UserLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
-// CreateUser
-// Use signup form to create a new user
+// NewUser holds signup data
+type NewUser struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Code     string `json:"code"`
+	Password string `json:"password"`
+}
+
+// UserPage holds user data for display
+type UserPage struct {
+	User    *models.User     `json:"user"`
+	Reviews []*models.Review `json:"reviews"`
+}
+
+// TokenInfo holds token valitity
+type TokenInfo struct {
+	Valid    bool  `json:"valid"`
+	TimeLeft int64 `json:"time_left"`
+}
+
+// CreateUser Use signup form to create a new user
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 
-	// Load session
-	session, _ := app.Sessions.Get(r, "session-name")
+	// Store user data
+	var userLogin NewUser
+	decoder := json.NewDecoder(r.Body)
 
-	// Parse the post data
-	err := r.ParseForm()
+	// Get login info from request)
+	err := decoder.Decode(&userLogin)
 	if err != nil {
 		app.ClientError(w, http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	// Model the new user based on html form
 	form := &forms.NewUser{
-		Username: r.PostForm.Get("username"),
-		Email:    r.PostForm.Get("email"),
-		InviteCode: r.PostForm.Get("invitecode"),
-		Password: r.PostForm.Get("password"),
+		Username:   userLogin.Username,
+		Email:      userLogin.Email,
+		InviteCode: userLogin.Code,
+		Password:   userLogin.Password,
 	}
 
 	// Validate form
 	if !form.Valid() {
-		app.RenderHTML(w, r, "signup.page.html", &HTMLData{Form: form})
+		JSONResponse(w, 400, "error")
 		return
 	}
 
 	// Validate request
 	used, err := app.DB.ValidateInvite(form.InviteCode)
 	if err != nil {
-		app.ServerError(w, err)
+		JSONResponse(w, 500, "error")
 		return
 	}
 	if used {
-		// Save failure message
-		session.AddFlash("Invalid invite code.", "default")
-
-		// Save session
-		err = session.Save(r, w)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		JSONResponse(w, 400, "error")
 		return
 	}
 
@@ -79,120 +92,45 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.AddFlash("Your account was created successfully! Please login.", "default")
-
-	// Save session
-	err = session.Save(r, w)
-	if err != nil {
-		app.ServerError(w, err)
-		return
-	}
-
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	JSONResponse(w, 200, "success")
 }
 
-// LoginUser
-// Displays a login page
-func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
-
-	// Load session
-	session, _ := app.Sessions.Get(r, "session-name")
-
-	// Get the previous flash
-	if flashes := session.Flashes("default"); len(flashes) > 0 {
-
-		// Save session
-		err := session.Save(r, w)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		// Display login with flash
-		app.RenderHTML(w, r, "login.page.html", &HTMLData{
-			Form: &forms.NewUser{},
-			Flash:   fmt.Sprintf("%v", flashes[0]),
-		})
-	} else {
-
-		// Display login without flash
-		app.RenderHTML(w, r, "login.page.html", &HTMLData{
-			Form: &forms.NewUser{},
-			Flash:   "",
-		})
-	}
-}
-
-// VerifyUser
-// Authenticates a user
+// VerifyUser Authenticates a user
 func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 
-	// Load session
-	session, _ := app.Sessions.Get(r, "session-name")
+	// Store user login
+	var userLogin UserLogin
+	decoder := json.NewDecoder(r.Body)
 
-	// Parse the post data
-	err := r.ParseForm()
+	// Get login info from request
+	err := decoder.Decode(&userLogin)
 	if err != nil {
 		app.ClientError(w, http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	// Authenticate the user
 	user := &models.User{}
-	user, err = app.DB.AuthenticateUser(r.PostForm.Get("username"), r.PostForm.Get("password"))
+	fail := &models.User{}
+	user, err = app.DB.AuthenticateUser(userLogin.Username, userLogin.Password)
 
-	if user == (&models.User{}) {
+	if cmp.Equal(user, fail) {
 
-		session.AddFlash("Invalid Login", "default")
-
-		// Save session
-		err = session.Save(r, w)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		// Redirect to login page
-		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
-	}
-
-	// Save user info
-	session.Values["user"] = user
-
-	// Save session
-	err = session.Save(r, w)
-	if err != nil {
-		app.ServerError(w, err)
+		// Invalid login attempt
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("{'error':'yes'}")
 		return
 	}
 
-	// Send logged in user to homepage
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// Get signed JWT
+	token, err := app.SignJWT(user.Username, user.Role)
+
+	JSONResponse(w, 200, token)
 }
 
-// LogoutUser
-// Removes a users session
-func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
-
-	// Load session
-	session, _ := app.Sessions.Get(r, "session-name")
-
-// Set user session to empty user
-	session.Values["user"] = &models.User{}
-
-	// Save session
-	err := session.Save(r, w)
-	if err != nil {
-		app.ServerError(w, err)
-		return
-	}
-
-	// Send to login page
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
-}
-
-// ShowUser
-// Display a users info page
+// ShowUser Display a users info page
 func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested user
@@ -221,45 +159,51 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get Collection
-	collection, err := app.DB.GetCollection(username)
-	if err != nil {
-		app.ServerError(w, err)
-		return
+	// collection, err := app.DB.GetCollection(username)
+	// if err != nil {
+	// 	app.ServerError(w, err)
+	// 	return
+	// }
+
+	// // Get current user
+	// _, currentUser := app.LoggedIn(r)
+
+	// // If a user is viewing their own page
+	// if username == currentUser.Username {
+
+	// 	// Get current invites from db
+	// 	invites, err := app.DB.GetInvites(username)
+	// 	if err != nil {
+	// 		app.ServerError(w, err)
+	// 		return
+	// 	}
+
+	// 	// Display user page with invites
+	// 	app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
+	// 		DisplayUser: user,
+	// 		Invites:     invites,
+	// 		Reviews:     reviews,
+	// 		Books:       collection,
+	// 	})
+	// } else {
+
+	// 	// Display user page without invites
+	// 	app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
+	// 		DisplayUser: user,
+	// 		Reviews:     reviews,
+	// 		Books:       collection,
+	// 	})
+	// }
+
+	userData := UserPage{
+		User:    user,
+		Reviews: reviews,
 	}
 
-	// Get current user
-	_, current_user := app.LoggedIn(r)
-
-	// If a user is viewing their own page
-	if username == current_user.Username {
-
-		// Get current invites from db
-		invites, err := app.DB.GetInvites(username)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		// Display user page with invites
-		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
-			DisplayUser:   user,
-			Invites: invites,
-			Reviews: reviews,
-			Books: collection,
-		})
-	} else {
-
-		// Display user page without invites
-		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
-			DisplayUser:   user,
-			Reviews: reviews,
-			Books: collection,
-		})
-	}
+	JSONResponse(w, 200, userData)
 }
 
-// CreateInviteCode
-// Generate an invite code for new users
+// CreateInviteCode Generate an invite code for new users
 func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
 
 	// Get user info
@@ -282,4 +226,32 @@ func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
 
 	// Show user their page to display the new invite code
 	http.Redirect(w, r, fmt.Sprintf("/user/%s", user.Username), http.StatusSeeOther)
+}
+
+// ValidateToken returns if a given token is valid
+func (app *App) ValidateToken(w http.ResponseWriter, r *http.Request) {
+
+	// Data to return
+	var tokenInfo TokenInfo
+
+	// Get token from header
+	token := GetTokenHeader(r)
+	if token == "" {
+		JSONResponse(w, 401, "")
+		return
+	}
+
+	// Verify valitity of token
+	_, _, left, err := app.VerifyJWT(token)
+	if err != nil {
+		log.Println("Invalid token verify")
+		JSONResponse(w, 401, "")
+		return
+	}
+
+	// Token valid, return time left
+	tokenInfo.TimeLeft = left
+	tokenInfo.Valid = true
+	JSONResponse(w, 200, tokenInfo)
+	return
 }

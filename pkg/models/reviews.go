@@ -30,7 +30,7 @@ func (db *DB) GetReview(bookid string) (*Review, error) {
 // LatestReviews
 // Grab latest n reviews
 func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
-	
+
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT $2`
 
@@ -71,7 +71,7 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 
 	// Query statement
-	stmt := `SELECT r.bookid id, r.rating, r.review, r.created, b.title FROM reviews r 
+	stmt := `SELECT r.id, r.bookid id, r.rating, r.review, r.created, b.title FROM reviews r 
 	INNER JOIN books b ON r.bookid = b.volumeid AND r.username = $1 ORDER BY created DESC LIMIT $2`
 
 	// Execute query
@@ -89,7 +89,7 @@ func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 		r := &Review{}
 
 		// Pull data into request
-		err := rows.Scan(&r.BookID, &r.Rating, &r.Review, &r.Created, &r.Username)
+		err := rows.Scan(&r.ID, &r.BookID, &r.Rating, &r.Review, &r.Created, &r.Username)
 		if err != nil {
 			return nil, err
 		}

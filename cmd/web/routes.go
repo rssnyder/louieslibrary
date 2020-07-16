@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -43,13 +44,15 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")
 
 	// Unlocked user methods
-	r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")
+	// r.HandleFunc("/user/signup", app.SignupUser).Methods("GET")
 	r.HandleFunc("/user/signup", app.CreateUser).Methods("POST")
-	r.HandleFunc("/user/login", app.LoginUser).Methods("GET")
+	//r.HandleFunc("/user/login", app.LoginUser).Methods("GET")
 	r.HandleFunc("/user/login", app.VerifyUser).Methods("POST")
-	r.HandleFunc("/user/logout", app.LogoutUser).Methods("GET")
+	// r.HandleFunc("/user/logout", app.LogoutUser).Methods("GET")
 	r.Handle("/user/invite/create", app.RequireLogin(http.HandlerFunc(app.CreateInviteCode))).Methods("POST")
 	r.Handle("/user/{username}", app.RequireLogin(http.HandlerFunc(app.ShowUser))).Methods("GET")
+
+	r.Handle("/token/validate", http.HandlerFunc(app.ValidateToken)).Methods("GET")
 
 	// Hosting static files
 

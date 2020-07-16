@@ -2,8 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // InsertUser
@@ -37,6 +38,7 @@ func (db *DB) InsertUser(name, email, password string) error {
 func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 
 	// Empty user
+	f := &User{}
 	u := &User{}
 
 	// Get id and password hash for given username
@@ -53,9 +55,9 @@ func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 	// Check whether the hashed password and plain-text password provided match
 	err = bcrypt.CompareHashAndPassword(u.HashedPassword, []byte(password))
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		return &User{}, nil
+		return f, nil
 	} else if err != nil {
-		return &User{}, err
+		return f, err
 	}
 
 	log.Printf("User %s logged in", username)
