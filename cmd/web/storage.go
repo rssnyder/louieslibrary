@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -151,6 +152,7 @@ func (app *App) FindObject(bucket, key string) (string, error) {
 	for _, item := range resp.Contents {
 		id := strings.Split(*item.Key, ".")[0]
 		if id == key {
+			log.Printf("Found key %s", id)
 			return *item.Key, nil
 		}
 	}

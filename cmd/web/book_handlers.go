@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
@@ -82,7 +83,8 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Present book file to user
-	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
+	fileType := strings.Split(key, ".")[1]
+	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.%s", book.Title, book.Authors, fileType))
 }
 
 // NewBook
@@ -184,7 +186,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	format := filepath.Ext(handler.Filename)
 
 	// Send book to storage server
-	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s.%s", form.VolumeID, format), file_bytes)
+	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s%s", form.VolumeID, format), file_bytes)
 	if err != nil {
 		app.ServerError(w, err)
 	}
