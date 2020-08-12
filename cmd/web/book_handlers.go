@@ -1,14 +1,15 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
-	"strconv"
-	"log"
 	"io/ioutil"
-	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 	"path/filepath"
+	"strconv"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
+	"github.com/gorilla/mux"
 )
 
 // ShowBook
@@ -45,9 +46,9 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 
 	// Render page
 	app.RenderHTML(w, r, "showbook.page.html", &HTMLData{
-		Book:   	book,
-		Reviews: 	reviews,
-		Form:   	&forms.NewReview{},
+		Book:    book,
+		Reviews: reviews,
+		Form:    &forms.NewReview{},
 	})
 }
 
@@ -71,10 +72,17 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Perform nessesary actions on book being downloaded
-	app.DB.DownloadBook(book.VolumeID, book.Downloads + 1)
+	app.DB.DownloadBook(book.VolumeID, book.Downloads+1)
+
+	// Find the book in the library
+	key, err := app.FindObject(app.BookBucket, book.VolumeID)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
 
 	// Present book file to user
-	app.ServeFile(w, app.BookBucket, fmt.Sprintf("%s.mobi", book.VolumeID), fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
+	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.mobi", book.Title, book.Authors))
 }
 
 // NewBook
@@ -108,21 +116,21 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 		// Model the new book on api feedback
 		form := &forms.NewBook{
-			VolumeID:				book_info.Id,
-			Title:       		book_info.Data.Title,
-			Subtitle:				book_info.Data.Subtitle,
-			Publisher:			book_info.Data.Publisher,
-			PublishedDate:	book_info.Data.PublishedDate,
-			PageCount:			strconv.Itoa(book_info.Data.PageCount),
-			MaturityRating:	book_info.Data.MaturityRating,
-			Authors:      	fmt.Sprint(book_info.Data.Authors),
+			VolumeID:       book_info.Id,
+			Title:          book_info.Data.Title,
+			Subtitle:       book_info.Data.Subtitle,
+			Publisher:      book_info.Data.Publisher,
+			PublishedDate:  book_info.Data.PublishedDate,
+			PageCount:      strconv.Itoa(book_info.Data.PageCount),
+			MaturityRating: book_info.Data.MaturityRating,
+			Authors:        fmt.Sprint(book_info.Data.Authors),
 			Categories:     fmt.Sprint(book_info.Data.Categories),
-			Description: 		book_info.Data.Description,
-			Uploader: 			user.Username,
-			Price:					fmt.Sprintf("%.2f %s", book_info.SaleInfo.Retail.Amount, book_info.SaleInfo.Retail.CurrencyCode),
-			ISBN10:					fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[0].Identifier),
-			ISBN13:					fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[1].Identifier),
-			ImageLink:			fmt.Sprint(book_info.Data.ImageLinks.Small),
+			Description:    book_info.Data.Description,
+			Uploader:       user.Username,
+			Price:          fmt.Sprintf("%.2f %s", book_info.SaleInfo.Retail.Amount, book_info.SaleInfo.Retail.CurrencyCode),
+			ISBN10:         fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[0].Identifier),
+			ISBN13:         fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[1].Identifier),
+			ImageLink:      fmt.Sprint(book_info.Data.ImageLinks.Small),
 		}
 
 		// Display the new book form with the retrived data
@@ -132,21 +140,21 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Model the new book on the information from the form
 	form := &forms.NewBook{
-		VolumeID:				r.PostForm.Get("volumeid"),
-		Title:       		r.PostForm.Get("title"),
-		Subtitle:				r.PostForm.Get("subtitle"),
-		Publisher:			r.PostForm.Get("publisher"),
-		PublishedDate:	r.PostForm.Get("publisheddate"),
-		PageCount:			r.PostForm.Get("pagecount"),
-		MaturityRating:	r.PostForm.Get("maturityrating"),
-		Authors:      	r.PostForm.Get("authors"),
+		VolumeID:       r.PostForm.Get("volumeid"),
+		Title:          r.PostForm.Get("title"),
+		Subtitle:       r.PostForm.Get("subtitle"),
+		Publisher:      r.PostForm.Get("publisher"),
+		PublishedDate:  r.PostForm.Get("publisheddate"),
+		PageCount:      r.PostForm.Get("pagecount"),
+		MaturityRating: r.PostForm.Get("maturityrating"),
+		Authors:        r.PostForm.Get("authors"),
 		Categories:     r.PostForm.Get("categories"),
-		Description: 		r.PostForm.Get("description"),
-		Uploader: 			user.Username,
-		Price:					r.PostForm.Get("price"),
-		ISBN10:					r.PostForm.Get("isbn10"),
-		ISBN13:					r.PostForm.Get("isbn13"),
-		ImageLink:			r.PostForm.Get("imagelink"),
+		Description:    r.PostForm.Get("description"),
+		Uploader:       user.Username,
+		Price:          r.PostForm.Get("price"),
+		ISBN10:         r.PostForm.Get("isbn10"),
+		ISBN13:         r.PostForm.Get("isbn13"),
+		ImageLink:      r.PostForm.Get("imagelink"),
 	}
 
 	// Validate the new book form
@@ -220,10 +228,10 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 
 	// Model the new review on html form
 	form := &forms.NewReview{
-		BookID:    r.PostForm.Get("volumeid"),
-		Username:  user.Username,
-		Rating:    r.PostForm.Get("rating"),
-		Review:    r.PostForm.Get("review"),
+		BookID:   r.PostForm.Get("volumeid"),
+		Username: user.Username,
+		Rating:   r.PostForm.Get("rating"),
+		Review:   r.PostForm.Get("review"),
 	}
 
 	// Validate the new review form
@@ -276,7 +284,7 @@ func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 
 	// Display page with all books
 	app.RenderHTML(w, r, "showbooks.page.html", &HTMLData{
-		Books:    books,
+		Books: books,
 	})
 }
 
@@ -302,21 +310,21 @@ func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
 
 	// Model the book
 	form := &forms.NewBook{
-		ID:							book.ID,
-		VolumeID:				book.VolumeID,
-		Title:       		book.Title,
-		Subtitle:				book.Subtitle,
-		Publisher:			book.Publisher,
-		PublishedDate:	book.PublishedDate,
-		PageCount:			book.PageCount,
-		MaturityRating:	book.MaturityRating,
-		Authors:      	book.Authors,
+		ID:             book.ID,
+		VolumeID:       book.VolumeID,
+		Title:          book.Title,
+		Subtitle:       book.Subtitle,
+		Publisher:      book.Publisher,
+		PublishedDate:  book.PublishedDate,
+		PageCount:      book.PageCount,
+		MaturityRating: book.MaturityRating,
+		Authors:        book.Authors,
 		Categories:     book.Categories,
-		Description: 		book.Description,
-		Price:					book.Price,
-		ISBN10:					book.ISBN10,
-		ISBN13:					book.ISBN13,
-		ImageLink:			book.ImageLink,
+		Description:    book.Description,
+		Price:          book.Price,
+		ISBN10:         book.ISBN10,
+		ISBN13:         book.ISBN13,
+		ImageLink:      book.ImageLink,
 	}
 
 	// Display the new book page with the current data
@@ -331,21 +339,21 @@ func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(50 << 20)
 
 	form := &forms.NewBook{
-		VolumeID:				r.PostForm.Get("volumeid"),
-		Title:       		r.PostForm.Get("title"),
-		Subtitle:				r.PostForm.Get("subtitle"),
-		Publisher:			r.PostForm.Get("publisher"),
-		PublishedDate:	r.PostForm.Get("publisheddate"),
-		PageCount:			r.PostForm.Get("pagecount"),
-		MaturityRating:	r.PostForm.Get("maturityrating"),
-		Authors:      	r.PostForm.Get("authors"),
+		VolumeID:       r.PostForm.Get("volumeid"),
+		Title:          r.PostForm.Get("title"),
+		Subtitle:       r.PostForm.Get("subtitle"),
+		Publisher:      r.PostForm.Get("publisher"),
+		PublishedDate:  r.PostForm.Get("publisheddate"),
+		PageCount:      r.PostForm.Get("pagecount"),
+		MaturityRating: r.PostForm.Get("maturityrating"),
+		Authors:        r.PostForm.Get("authors"),
 		Categories:     r.PostForm.Get("categories"),
-		Description: 		r.PostForm.Get("description"),
-		Uploader: 			"no change",
-		Price:					r.PostForm.Get("price"),
-		ISBN10:					r.PostForm.Get("isbn10"),
-		ISBN13:					r.PostForm.Get("isbn13"),
-		ImageLink:			r.PostForm.Get("imagelink"),
+		Description:    r.PostForm.Get("description"),
+		Uploader:       "no change",
+		Price:          r.PostForm.Get("price"),
+		ISBN10:         r.PostForm.Get("isbn10"),
+		ISBN13:         r.PostForm.Get("isbn13"),
+		ImageLink:      r.PostForm.Get("imagelink"),
 	}
 
 	// Validate new book form
@@ -353,7 +361,7 @@ func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 		return
 	}
-	
+
 	// Update the book with the new information
 	app.DB.UpdateBook(form)
 

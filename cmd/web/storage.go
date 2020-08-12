@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
-	"os"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -79,7 +81,7 @@ func (app *App) DownloadObject(bucket, key, destination string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Return no error
 	return nil
 }
@@ -129,4 +131,30 @@ func (app *App) ServeFile(w http.ResponseWriter, bucket, key, name string) {
 
 	// Write headers and bytes to user
 	w.Write(data)
+}
+
+// FindObject
+// Take bytes and put into a bucket object
+func (app *App) FindObject(bucket, key string) (string, error) {
+
+	var mismatch string
+
+	// Connection to s3 server
+	storageConnection := s3.New(app.Storage)
+
+	// Upload a new object
+	resp, err := storageConnection.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
+	if err != nil {
+		return mismatch, err
+	}
+
+	for _, item := range resp.Contents {
+		id := strings.Split(*item.Key, ".")[0]
+		if id == key {
+			return *item.Key, nil
+		}
+	}
+
+	// Return no error
+	return mismatch, nil
 }
