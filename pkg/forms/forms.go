@@ -1,21 +1,19 @@
 package forms
 
 import (
+	"log"
 	"strings"
 	"unicode/utf8"
-	"log"
 )
 
-// NewRequest
-// Model the request structure
+// NewRequest model the request structure
 type NewRequest struct {
-	Requester	string
+	Requester string
 	Title     string
 	Failures  map[string]string
 }
 
-// Valid
-// Make sure request has nessesary attributes
+// Valid make sure request has nessesary attributes
 func (f *NewRequest) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -37,18 +35,16 @@ func (f *NewRequest) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// NewUser
-// Model the base user structure
+// NewUser model the base user structure
 type NewUser struct {
-	Username 		string
-	Email    		string
-	Password 		string
-	InviteCode	string
-	Failures 		map[string]string
+	Username   string
+	Email      string
+	Password   string
+	InviteCode string
+	Failures   map[string]string
 }
 
-// Valid
-// Make sure user has nessesary attributes
+// Valid make sure user has nessesary attributes
 func (f *NewUser) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -88,30 +84,28 @@ func (f *NewUser) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// Book
-// Model the book structure
+// NewBook model the book structure
 type NewBook struct {
-	ID 							string
-	VolumeID				string
-	Title       		string
-	Subtitle				string
-	Publisher				string
-	PublishedDate		string
-	PageCount				string
-	MaturityRating	string
-	Authors      		string
-	Categories      string
-	Description 		string
-	Uploader 				string
-	Price						string
-	ISBN10					string
-	ISBN13					string
-	ImageLink				string
-	Failures    		map[string]string
+	ID             string
+	VolumeID       string
+	Title          string
+	Subtitle       string
+	Publisher      string
+	PublishedDate  string
+	PageCount      string
+	MaturityRating string
+	Authors        string
+	Categories     string
+	Description    string
+	Uploader       string
+	Price          string
+	ISBN10         string
+	ISBN13         string
+	ImageLink      string
+	Failures       map[string]string
 }
 
-// Valid
-// Make sure book has nessesary attributes
+// Valid make sure book has nessesary attributes
 func (f *NewBook) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -120,7 +114,7 @@ func (f *NewBook) Valid() bool {
 		f.Failures["VolumeID"] = "VolumeID is required"
 		log.Printf("Book submitted with no VolumeID")
 	}
-	
+
 	// Check for non-empty Title
 	if strings.TrimSpace(f.Title) == "" {
 		f.Failures["Title"] = "Title is required"
@@ -226,19 +220,17 @@ func (f *NewBook) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// Review
-// Model the review structure
+// NewReview model the review structure
 type NewReview struct {
-	ID        int
-	BookID    string
-	Username  string
-	Rating    string
-	Review    string
-	Failures  map[string]string
+	ID       int
+	BookID   string
+	Username string
+	Rating   string
+	Review   string
+	Failures map[string]string
 }
 
-// Valid
-// Make sure review has nessesary attributes
+// Valid make sure review has nessesary attributes
 func (f *NewReview) Valid() bool {
 	f.Failures = make(map[string]string)
 
@@ -271,11 +263,10 @@ func (f *NewReview) Valid() bool {
 	return len(f.Failures) == 0
 }
 
-// NewMessage
-// Model the base message structure
+// NewMessage model the base message structure
 type NewMessage struct {
-	Sender 		string
-	Reciver   string
-	Content 	string
-	Failures	map[string]string
+	Sender   string
+	Reciver  string
+	Content  string
+	Failures map[string]string
 }

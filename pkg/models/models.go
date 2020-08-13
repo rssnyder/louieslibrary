@@ -1,17 +1,18 @@
 package models
 
 import (
-	"time"
 	"database/sql"
+	"time"
+
 	"gopkg.in/guregu/null.v4"
 )
 
+// DB hold db connection
 type DB struct {
 	*sql.DB
 }
 
-// Request
-// Describe the request structure
+// Request describe the request structure
 type Request struct {
 	ID        int
 	Requester string
@@ -21,88 +22,83 @@ type Request struct {
 	Created   time.Time
 }
 
-// Requests
+// Requests multiple requests
 type Requests []*Request
 
-// User
-// Describe the user structure
+// User describe the user structure
 type User struct {
-	ID        			int
-	Username  			string
-	Email     			string
-	HashedPassword	[]byte
-	Role      			string
-	Created   			time.Time
+	ID             int
+	Username       string
+	Email          string
+	HashedPassword []byte
+	Role           string
+	Created        time.Time
 }
 
-// Users
+// Users multiple users
 type Users []*User
 
-// Invite
-// Describe the invite structure
+// Invite describe the invite structure
 type Invite struct {
-	ID					string
-	Username 		null.String
-	Code    		string
-	Creator			string
-	Activated		string
-	Created   	time.Time
-}
-
-// Invites
-type Invites []*Invite
-
-// Book
-// Describe the book structure
-type Book struct {
-	ID							string
-	VolumeID				string
-	Title       		string
-	Subtitle				string
-	Publisher				string
-	PublishedDate		string
-	PageCount				string
-	MaturityRating	string
-	Authors      		string
-	Categories      string
-	Description 		string
-	Uploader 				string
-	Price						string
-	ISBN10					string
-	ISBN13					string
-	ImageLink				string
-	Downloads				int
-	Collected				bool
-	Created    			time.Time
-}
-
-// Books
-type Books []*Book
-
-// Review
-// Describe the review structure
-type Review struct {
-	ID        int
-	BookID    string
-	Username	string
-	Rating    string
-	Review    string
+	ID        string
+	Username  null.String
+	Code      string
+	Creator   string
+	Activated string
 	Created   time.Time
 }
 
-// Reviews
+// Invites multiple invites
+type Invites []*Invite
+
+// Book describe the book structure
+type Book struct {
+	ID             string
+	VolumeID       string
+	Title          string
+	Subtitle       string
+	Publisher      string
+	PublishedDate  string
+	PageCount      string
+	MaturityRating string
+	Authors        string
+	Categories     string
+	Description    string
+	Uploader       string
+	Price          string
+	ISBN10         string
+	ISBN13         string
+	ImageLink      string
+	Downloads      int
+	Collected      bool
+	Created        time.Time
+}
+
+// Books multiple books
+type Books []*Book
+
+// Review describe the review structure
+type Review struct {
+	ID       int
+	BookID   string
+	Username string
+	Rating   string
+	Review   string
+	Created  time.Time
+}
+
+// Reviews multiple reviews
 type Reviews []*Review
 
-// Message
-// Describe the message structure
+// Message describe the message structure
 type Message struct {
 	ID      int
 	Sender  string
-	Reciver	string
+	Reciver string
 	Read    bool
-	Content	string
-	Created	time.Time
+	Content string
+	Created time.Time
 }
 
-// Messages
+// Messages multiple messages
 type Messages []*Message

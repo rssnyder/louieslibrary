@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	//"strconv"
-	//"strings"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
 )
 
-// NewMessage
-// Display the new request form
+// Messages shows a conversation
 func (app *App) Messages(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested conversation user
@@ -27,7 +25,7 @@ func (app *App) Messages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user from db
-	display_user, err := app.DB.GetUser(reciver)
+	displayUser, err := app.DB.GetUser(reciver)
 	if err != nil {
 		app.NotFound(w)
 		return
@@ -60,24 +58,22 @@ func (app *App) Messages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-
 	// Model the new message form based on html form
 	form := &forms.NewMessage{
-		Reciver:  reciver,
+		Reciver: reciver,
 	}
 
 	app.RenderHTML(w, r, "messages.page.html", &HTMLData{
-		Messages: messages,
-		DisplayUser: display_user,
-		Threads: threads,
-		Form: form,
+		Messages:    messages,
+		DisplayUser: displayUser,
+		Threads:     threads,
+		Form:        form,
 	})
 }
 
-// CreateMessage
-// Create a new message in the db
+// CreateMessage create a new message in the db
 func (app *App) CreateMessage(w http.ResponseWriter, r *http.Request) {
-	
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -93,9 +89,9 @@ func (app *App) CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	// Model the new message based on html form
 	form := &forms.NewMessage{
-		Sender: 	user.Username,
-		Reciver:  r.PostForm.Get("reciver"),
-		Content:	r.PostForm.Get("content"),
+		Sender:  user.Username,
+		Reciver: r.PostForm.Get("reciver"),
+		Content: r.PostForm.Get("content"),
 	}
 
 	// Validate form

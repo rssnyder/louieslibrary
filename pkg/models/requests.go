@@ -5,8 +5,7 @@ import (
 	"log"
 )
 
-// GetRequest
-// Retrive a request from the db
+// GetRequest retrive a request from the db
 func (db *DB) GetRequest(id int) (*Request, error) {
 
 	// Query statement
@@ -30,8 +29,7 @@ func (db *DB) GetRequest(id int) (*Request, error) {
 	return r, nil
 }
 
-// LatestRequests
-// Grab latest n requests
+// LatestRequests grab latest n requests
 func (db *DB) LatestRequests(limit int) (Requests, error) {
 
 	// Query statement
@@ -69,8 +67,7 @@ func (db *DB) LatestRequests(limit int) (Requests, error) {
 	return requests, nil
 }
 
-// InsertRequest
-// Add new request to the db
+// InsertRequest add new request to the db
 func (db *DB) InsertRequest(requester, title, source string) (int, error) {
 
 	// Save stored request
@@ -91,8 +88,7 @@ func (db *DB) InsertRequest(requester, title, source string) (int, error) {
 	return requestid, nil
 }
 
-// FillRequest
-// Link a request to a book
+// FillRequest link a request to a book
 func (db *DB) FillRequest(requestid int, bookid string) string {
 
 	// Query statement

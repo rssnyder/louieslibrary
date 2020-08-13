@@ -3,21 +3,20 @@ package main
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 	"github.com/gorilla/mux"
 )
 
-// SignupUser
-// Display the signup form
+// SignupUser display the signup form
 func (app *App) SignupUser(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "signup.page.html", &HTMLData{
 		Form: &forms.NewUser{},
 	})
 }
 
-// CreateUser
-// Use signup form to create a new user
+// CreateUser use signup form to create a new user
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -32,10 +31,10 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Model the new user based on html form
 	form := &forms.NewUser{
-		Username: r.PostForm.Get("username"),
-		Email:    r.PostForm.Get("email"),
+		Username:   r.PostForm.Get("username"),
+		Email:      r.PostForm.Get("email"),
 		InviteCode: r.PostForm.Get("invitecode"),
-		Password: r.PostForm.Get("password"),
+		Password:   r.PostForm.Get("password"),
 	}
 
 	// Validate form
@@ -91,8 +90,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-// LoginUser
-// Displays a login page
+// LoginUser displays a login page
 func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -110,21 +108,20 @@ func (app *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 		// Display login with flash
 		app.RenderHTML(w, r, "login.page.html", &HTMLData{
-			Form: &forms.NewUser{},
-			Flash:   fmt.Sprintf("%v", flashes[0]),
+			Form:  &forms.NewUser{},
+			Flash: fmt.Sprintf("%v", flashes[0]),
 		})
 	} else {
 
 		// Display login without flash
 		app.RenderHTML(w, r, "login.page.html", &HTMLData{
-			Form: &forms.NewUser{},
-			Flash:   "",
+			Form:  &forms.NewUser{},
+			Flash: "",
 		})
 	}
 }
 
-// VerifyUser
-// Authenticates a user
+// VerifyUser authenticates a user
 func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -170,14 +167,13 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// LogoutUser
-// Removes a users session
+// LogoutUser removes a users session
 func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
-// Set user session to empty user
+	// Set user session to empty user
 	session.Values["user"] = &models.User{}
 
 	// Save session
@@ -191,8 +187,7 @@ func (app *App) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-// ShowUser
-// Display a users info page
+// ShowUser display a users info page
 func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested user
@@ -228,10 +223,10 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get current user
-	_, current_user := app.LoggedIn(r)
+	_, currentUser := app.LoggedIn(r)
 
 	// If a user is viewing their own page
-	if username == current_user.Username {
+	if username == currentUser.Username {
 
 		// Get current invites from db
 		invites, err := app.DB.GetInvites(username)
@@ -242,24 +237,23 @@ func (app *App) ShowUser(w http.ResponseWriter, r *http.Request) {
 
 		// Display user page with invites
 		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
-			DisplayUser:   user,
-			Invites: invites,
-			Reviews: reviews,
-			Books: collection,
+			DisplayUser: user,
+			Invites:     invites,
+			Reviews:     reviews,
+			Books:       collection,
 		})
 	} else {
 
 		// Display user page without invites
 		app.RenderHTML(w, r, "showuser.page.html", &HTMLData{
-			DisplayUser:   user,
-			Reviews: reviews,
-			Books: collection,
+			DisplayUser: user,
+			Reviews:     reviews,
+			Books:       collection,
 		})
 	}
 }
 
-// CreateInviteCode
-// Generate an invite code for new users
+// CreateInviteCode generate an invite code for new users
 func (app *App) CreateInviteCode(w http.ResponseWriter, r *http.Request) {
 
 	// Get user info

@@ -5,8 +5,7 @@ import (
 	"log"
 )
 
-// GetReview
-// Get a review from the db
+// GetReview get a review from the db
 func (db *DB) GetReview(bookid string) (*Review, error) {
 
 	// Query statement
@@ -27,10 +26,9 @@ func (db *DB) GetReview(bookid string) (*Review, error) {
 	return r, nil
 }
 
-// LatestReviews
-// Grab latest n reviews
+// LatestReviews grab latest n reviews
 func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
-	
+
 	// Query statement
 	stmt := `SELECT bookid, username, rating, review, created FROM reviews WHERE bookid = $1 ORDER BY created DESC LIMIT $2`
 
@@ -66,8 +64,7 @@ func (db *DB) LatestReviews(bookid string, limit int) (Reviews, error) {
 	return reviews, nil
 }
 
-// UserLatestReviews
-// Get users reviews
+// UserLatestReviews get users reviews
 func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 
 	// Query statement
@@ -106,8 +103,7 @@ func (db *DB) UserLatestReviews(username string, limit int) (Reviews, error) {
 	return reviews, nil
 }
 
-// InsertReview
-// Add a new review
+// InsertReview add a new review
 func (db *DB) InsertReview(bookid, username, rating, review string) (int, error) {
 
 	// Save stored request

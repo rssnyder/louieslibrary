@@ -2,11 +2,11 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
-// Routes
-// Define the site routes
+// Routes define the site routes
 func (app *App) Routes() *mux.Router {
 
 	// Create a new router

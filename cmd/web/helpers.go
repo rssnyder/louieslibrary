@@ -1,19 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"errors"
-	"net/http"
-	"io/ioutil"
 	"archive/zip"
-	"os"
 	"crypto/rand"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 )
 
-// LoggedIn
-// Get logged in status
-// Pass along user data if true
+// LoggedIn get logged in status
 func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
 
 	// Empty user struct
@@ -23,8 +22,8 @@ func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
 	session, _ := app.Sessions.Get(r, "session-name")
 
 	// Get user from session
-	logged_in := session.Values["user"]
-	user, ok := logged_in.(*models.User)
+	loggedIn := session.Values["user"]
+	user, ok := loggedIn.(*models.User)
 
 	// Test if user exists
 	if !ok {
@@ -45,29 +44,27 @@ func (app *App) LoggedIn(r *http.Request) (bool, *models.User) {
 	return true, user
 }
 
-// ZipDirectory
-// Compress a directory on the disk
-// Return the name of the zip file
+// ZipDirectory compress a directory on the disk
 func ZipDirectory(dirPath string) (string, error) {
 
 	// Empty output
 	var output string
 
 	// Get a Buffer to Write To
-	out_file, err := os.Create(dirPath + ".zip")
+	outFile, err := os.Create(dirPath + ".zip")
 	if err != nil {
-			return output, err
+		return output, err
 	}
-	defer out_file.Close()
+	defer outFile.Close()
 
 	// Create a new zip archive.
-	writer := zip.NewWriter(out_file)
+	writer := zip.NewWriter(outFile)
 
 	// Add all file sin directory to zip
 	files, err := ioutil.ReadDir(dirPath)
 	for _, file := range files {
-		full_path := dirPath + "/" + file.Name()
-		dat, err := ioutil.ReadFile(full_path)
+		fullPath := dirPath + "/" + file.Name()
+		dat, err := ioutil.ReadFile(fullPath)
 		if err != nil {
 			return output, err
 		}
@@ -93,8 +90,7 @@ func ZipDirectory(dirPath string) (string, error) {
 	return dirPath + ".zip", nil
 }
 
-// CreateUUID
-// Generate a guid
+// CreateUUID generate a guid
 func CreateUUID() (string, error) {
 
 	// Empty guid

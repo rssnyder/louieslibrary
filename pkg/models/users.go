@@ -2,19 +2,19 @@ package models
 
 import (
 	"database/sql"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
-// InsertUser
-// Create a new user
+// InsertUser create a new user
 func (db *DB) InsertUser(name, email, password string) error {
 
 	// Empty new user id
 	var userid int
 
 	// Hash and salt password
-	hashed_password, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func (db *DB) InsertUser(name, email, password string) error {
 	stmt := `INSERT INTO users (username, email, password, role, created) VALUES($1, $2, $3, 'reader', timezone('utc', now())) RETURNING id`
 
 	// Create
-	err = db.QueryRow(stmt, name, email, hashed_password).Scan(&userid)
+	err = db.QueryRow(stmt, name, email, hashedPassword).Scan(&userid)
 	if err != nil {
 		return err
 	}
@@ -32,8 +32,7 @@ func (db *DB) InsertUser(name, email, password string) error {
 	return nil
 }
 
-// AuthenticateUser
-// Checks the valitity of a login
+// AuthenticateUser checks the valitity of a login
 func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 
 	// Empty user
@@ -64,8 +63,7 @@ func (db *DB) AuthenticateUser(username, password string) (*User, error) {
 	return u, nil
 }
 
-// GetUser
-//  Retrive user information
+// GetUser retrive user information
 func (db *DB) GetUser(username string) (*User, error) {
 
 	// Empty user
@@ -87,8 +85,7 @@ func (db *DB) GetUser(username string) (*User, error) {
 	return u, nil
 }
 
-// GetUsers
-// Retrive user information on everyone
+// GetUsers retrive user information on everyone
 func (db *DB) GetUsers() (Users, error) {
 
 	// Empty user
@@ -123,8 +120,7 @@ func (db *DB) GetUsers() (Users, error) {
 	return users, nil
 }
 
-// GetInvites
-// Get a users invites
+// GetInvites get a users invites
 func (db *DB) GetInvites(creator string) (Invites, error) {
 
 	// Empty invite collection
@@ -162,15 +158,14 @@ func (db *DB) GetInvites(creator string) (Invites, error) {
 	return invites, nil
 }
 
-// ValidateInvite
-// Check the valitity of an invite code
-func (db *DB) ValidateInvite(invite_code string) (bool, error) {
+// ValidateInvite check the valitity of an invite code
+func (db *DB) ValidateInvite(inviteCode string) (bool, error) {
 
 	// Used or not
 	var status bool
 
 	// Get id and password hash for given username
-	row := db.QueryRow("SELECT status FROM invites WHERE code = $1", invite_code)
+	row := db.QueryRow("SELECT status FROM invites WHERE code = $1", inviteCode)
 
 	err := row.Scan(&status)
 	if err == sql.ErrNoRows {
@@ -182,8 +177,7 @@ func (db *DB) ValidateInvite(invite_code string) (bool, error) {
 	return status, nil
 }
 
-// CreateInvite
-// Add a new invite
+// CreateInvite add a new invite
 func (db *DB) CreateInvite(creator, code string) error {
 
 	// Empty invite id
@@ -202,8 +196,7 @@ func (db *DB) CreateInvite(creator, code string) error {
 	return nil
 }
 
-// FillInvite
-// Use an invite, invalidate for future use
+// FillInvite use an invite, invalidate for future use
 func (db *DB) FillInvite(username, code string) error {
 
 	// The empty used invite

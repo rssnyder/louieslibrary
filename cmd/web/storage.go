@@ -14,15 +14,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-// UploadBytes
-// Take bytes and put into a bucket object
+// UploadBytes take bytes and put into a bucket object
 func (app *App) UploadBytes(bucket, key string, data []byte) error {
 
 	// Connection to s3 server
-	storage_connection := s3.New(app.Storage)
+	storageConnection := s3.New(app.Storage)
 
 	// Upload a new object
-	_, err := storage_connection.PutObject(&s3.PutObjectInput{
+	_, err := storageConnection.PutObject(&s3.PutObjectInput{
 		Body:   bytes.NewReader(data),
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
@@ -35,12 +34,11 @@ func (app *App) UploadBytes(bucket, key string, data []byte) error {
 	return nil
 }
 
-// UploadFile
-// Take local file and put into a bucket object
+// UploadFile take local file and put into a bucket object
 func (app *App) UploadFile(bucket, key, filename string) error {
 
 	// Connection to s3 server
-	storage_connection := s3.New(app.Storage)
+	storageConnection := s3.New(app.Storage)
 
 	// Read file
 	data, err := ioutil.ReadFile(filename)
@@ -49,7 +47,7 @@ func (app *App) UploadFile(bucket, key, filename string) error {
 	}
 
 	// Upload a new object
-	_, err = storage_connection.PutObject(&s3.PutObjectInput{
+	_, err = storageConnection.PutObject(&s3.PutObjectInput{
 		Body:   bytes.NewReader(data),
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
@@ -62,8 +60,7 @@ func (app *App) UploadFile(bucket, key, filename string) error {
 	return nil
 }
 
-// DownloadObject
-// Gets an object from s3 to a local file
+// DownloadObject gets an object from s3 to a local file
 func (app *App) DownloadObject(bucket, key, destination string) error {
 
 	// Retrieve object
@@ -87,18 +84,17 @@ func (app *App) DownloadObject(bucket, key, destination string) error {
 	return nil
 }
 
-// DownloadBytes
-// Get an object from a bucket and save the bytes
+// DownloadBytes get an object from a bucket and save the bytes
 func (app *App) DownloadBytes(bucket, key string) ([]byte, error) {
 
 	// Empty bytes for object
 	var output []byte
 
 	// Connection to s3 server
-	storage_connection := s3.New(app.Storage)
+	storageConnection := s3.New(app.Storage)
 
 	// Get object
-	result, err := storage_connection.GetObject(&s3.GetObjectInput{
+	result, err := storageConnection.GetObject(&s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 	})
@@ -116,8 +112,7 @@ func (app *App) DownloadBytes(bucket, key string) ([]byte, error) {
 	return output, nil
 }
 
-// ServeFile
-// Takes bucket object and sends to user
+// ServeFile takes bucket object and sends to user
 func (app *App) ServeFile(w http.ResponseWriter, bucket, key, name string) {
 
 	// Download object bytes
@@ -134,8 +129,7 @@ func (app *App) ServeFile(w http.ResponseWriter, bucket, key, name string) {
 	w.Write(data)
 }
 
-// FindObject
-// Take bytes and put into a bucket object
+// FindObject get an object given the name
 func (app *App) FindObject(bucket, key string) (string, error) {
 
 	var mismatch string

@@ -5,8 +5,7 @@ import (
 	"net/http"
 )
 
-// LogRequest 
-// Logs every request
+// LogRequest logs every request
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pattern := `%s - "%s %s %s"`
@@ -16,8 +15,7 @@ func LogRequest(next http.Handler) http.Handler {
 	})
 }
 
-// SecureHeaders
-// Set secure headers
+// SecureHeaders set secure headers
 func SecureHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -28,8 +26,7 @@ func SecureHeaders(next http.Handler) http.Handler {
 	})
 }
 
-// RequireLogin
-// Redirect unauthenticated users
+// RequireLogin redirect unauthenticated users
 func (app *App) RequireLogin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		loggedIn, _ := app.LoggedIn(r)
@@ -42,8 +39,7 @@ func (app *App) RequireLogin(next http.Handler) http.Handler {
 	})
 }
 
-// RequireWriter
-// Redirect users without writer role
+// RequireWriter redirect users without writer role
 func (app *App) RequireWriter(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		loggedIn, user := app.LoggedIn(r)

@@ -1,12 +1,11 @@
 package models
 
 import (
-	"log"
 	"database/sql"
+	"log"
 )
 
-// InsertMessage
-// Send a new message
+// InsertMessage send a new message
 func (db *DB) InsertMessage(sender, reciver, content string) error {
 
 	// Query statement
@@ -27,8 +26,7 @@ func (db *DB) InsertMessage(sender, reciver, content string) error {
 	return nil
 }
 
-// GetConversation
-// Retrives messages from a particular user
+// GetConversation retrives messages from a particular user
 func (db *DB) GetConversation(sender, reciver string) (Messages, error) {
 
 	// Query statement
@@ -69,6 +67,7 @@ func (db *DB) GetConversation(sender, reciver string) (Messages, error) {
 	return messages, nil
 }
 
+// MarkAsRead sets as messages to read
 func (db *DB) MarkAsRead(sender, reciver string) {
 
 	stmt := `UPDATE messages SET read = TRUE FROM (
@@ -79,8 +78,7 @@ func (db *DB) MarkAsRead(sender, reciver string) {
 	db.QueryRow(stmt, sender, reciver)
 }
 
-// GetThreads
-// Get the users someone has messages w
+// GetThreads get the users someone has messages w
 func (db *DB) GetThreads(reciver string) (Messages, error) {
 
 	// Unique threads
@@ -115,18 +113,18 @@ func (db *DB) GetThreads(reciver string) (Messages, error) {
 	stmt = `SELECT DISTINCT reciver FROM messages WHERE sender = $1`
 
 	// Create
-	rows_second, err := db.Query(stmt, reciver)
+	rewsSecond, err := db.Query(stmt, reciver)
 	if err != nil {
 		return nil, err
 	}
-	defer rows_second.Close()
+	defer rewsSecond.Close()
 
 	// Get all the matching requets
-	for rows_second.Next() {
+	for rewsSecond.Next() {
 		m := &Message{}
 
 		// Pull data into message
-		err := rows_second.Scan(&m.Sender)
+		err := rewsSecond.Scan(&m.Sender)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +134,7 @@ func (db *DB) GetThreads(reciver string) (Messages, error) {
 	}
 
 	// Catch sql errors
-	if err = rows_second.Err(); err != nil {
+	if err = rewsSecond.Err(); err != nil {
 		return nil, err
 	}
 
@@ -153,8 +151,7 @@ func (db *DB) GetThreads(reciver string) (Messages, error) {
 	return messages, nil
 }
 
-// GetUnread
-// Get the users unread messages
+// GetUnopened get the users unread messages
 func (db *DB) GetUnopened(reciver string) (Messages, error) {
 
 	stmt := `SELECT DISTINCT sender FROM messages WHERE reciver = $1 AND read = false`
@@ -192,8 +189,7 @@ func (db *DB) GetUnopened(reciver string) (Messages, error) {
 	return messages, nil
 }
 
-// AppendIfUnique
-// Append only if item is unique
+// AppendIfUnique append only if item is unique
 func AppendIfUnique(slice []string, i string) []string {
 	for _, ele := range slice {
 		if ele == i {

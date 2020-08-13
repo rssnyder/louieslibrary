@@ -4,8 +4,7 @@ import (
 	"net/http"
 )
 
-// Home
-// Display the home page of the sites
+// Home display the home page of the sites
 func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 
 	// 404 if not truly root
@@ -35,8 +34,7 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// About
-// Display the site information page
+// About display the site information page
 func (app *App) About(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "about.page.html", &HTMLData{})
 }

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
 )
 
-// ShowRequest
-// Display a single request
+// ShowRequest display a single request
 func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -63,18 +63,16 @@ func (app *App) ShowRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// NewRequest
-// Display the new request form
+// NewRequest display the new request form
 func (app *App) NewRequest(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "newrequest.page.html", &HTMLData{
 		Form: &forms.NewRequest{},
 	})
 }
 
-// CreateRequest
-// Create a new request in the db
+// CreateRequest create a new request in the db
 func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
-	
+
 	// Load session
 	session, _ := app.Sessions.Get(r, "session-name")
 
@@ -120,8 +118,7 @@ func (app *App) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
 }
 
-// FillRequest
-// Tie a request to an existing book
+// FillRequest tie a request to an existing book
 func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -158,8 +155,7 @@ func (app *App) FillRequest(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/request/%d", id), http.StatusSeeOther)
 }
 
-// ListAllRequests
-// Displays all the requests
+// ListAllRequests displays all the requests
 func (app *App) ListAllRequests(w http.ResponseWriter, r *http.Request) {
 
 	// Get the requests from the db
@@ -171,6 +167,6 @@ func (app *App) ListAllRequests(w http.ResponseWriter, r *http.Request) {
 
 	// Display all requests
 	app.RenderHTML(w, r, "showrequests.page.html", &HTMLData{
-		Requests:    requests,
+		Requests: requests,
 	})
 }

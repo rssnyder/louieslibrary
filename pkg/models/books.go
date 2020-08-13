@@ -3,11 +3,11 @@ package models
 import (
 	"database/sql"
 	"log"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
 )
 
-// GetBook
-// Retrive a book from the db
+// GetBook retrive a book from the db
 func (db *DB) GetBook(id string) (*Book, error) {
 	// Query statement
 	stmt := `SELECT id, volumeid, title, subtitle, publisher, publisheddate, pagecount,
@@ -31,8 +31,7 @@ func (db *DB) GetBook(id string) (*Book, error) {
 	return b, nil
 }
 
-// LatestBooks
-// Grab the latest n books
+// LatestBooks grab the latest n books
 func (db *DB) LatestBooks(limit int) (Books, error) {
 	// Query statement
 	stmt := `SELECT id, volumeid, title, subtitle, publisher, publisheddate, pagecount,
@@ -74,9 +73,8 @@ func (db *DB) LatestBooks(limit int) (Books, error) {
 	return books, nil
 }
 
-// InsertBooks
-// Add a new book to the library
-func (db *DB) InsertBook(new_book *forms.NewBook) (int, error) {
+// InsertBook add a new book to the library
+func (db *DB) InsertBook(newBook *forms.NewBook) (int, error) {
 
 	// Save stored request
 	var bookid int
@@ -88,32 +86,30 @@ func (db *DB) InsertBook(new_book *forms.NewBook) (int, error) {
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 0, timezone('utc', now())) RETURNING id`
 
 	// Query and fill book structure
-	err := db.QueryRow(stmt, new_book.VolumeID, new_book.Title, new_book.Subtitle, new_book.Publisher, new_book.PublishedDate, new_book.PageCount,
-		new_book.MaturityRating, new_book.Authors, new_book.Categories, new_book.Description, new_book.Uploader, new_book.Price, new_book.ISBN10, new_book.ISBN13,
-		new_book.ImageLink).Scan(&bookid)
+	err := db.QueryRow(stmt, newBook.VolumeID, newBook.Title, newBook.Subtitle, newBook.Publisher, newBook.PublishedDate, newBook.PageCount,
+		newBook.MaturityRating, newBook.Authors, newBook.Categories, newBook.Description, newBook.Uploader, newBook.Price, newBook.ISBN10, newBook.ISBN13,
+		newBook.ImageLink).Scan(&bookid)
 	if err != nil {
 		return 0, err
 	}
 
-	log.Printf("New book %s uploaded by %s", new_book.Title, new_book.Uploader)
+	log.Printf("New book %s uploaded by %s", newBook.Title, newBook.Uploader)
 
 	// Return new book id
 	return bookid, nil
 }
 
-// DownloadBook
-// Increment downloads of a book
-func (db *DB) DownloadBook(book_id string, downloads int) {
+// DownloadBook increment downloads of a book
+func (db *DB) DownloadBook(bookID string, downloads int) {
 
 	// Query statement
 	stmt := `UPDATE books SET downloads = $1 WHERE volumeid = $2`
 
 	// Incriment count
-	db.QueryRow(stmt, downloads, book_id)
+	db.QueryRow(stmt, downloads, bookID)
 }
 
-// UpdateBook
-// Edit a books attributes
+// UpdateBook edit a books attributes
 func (db *DB) UpdateBook(book *forms.NewBook) (int, error) {
 
 	// Save stored request
@@ -134,8 +130,7 @@ func (db *DB) UpdateBook(book *forms.NewBook) (int, error) {
 	return bookid, nil
 }
 
-// CollectBook
-// Add a book to a users collection
+// CollectBook add a book to a users collection
 func (db *DB) CollectBook(username, year, id string) {
 
 	// Query statement
@@ -146,8 +141,7 @@ func (db *DB) CollectBook(username, year, id string) {
 	log.Printf("%s collected book %s", username, id)
 }
 
-// GetCollectionItem
-// Get a book from a users collection
+// GetCollectionItem get a book from a users collection
 func (db *DB) GetCollectionItem(username, id string) bool {
 
 	var vol int
@@ -163,8 +157,7 @@ func (db *DB) GetCollectionItem(username, id string) bool {
 	return true
 }
 
-// GetCollection
-// Get all the books in a users collection
+// GetCollection get all the books in a users collection
 func (db *DB) GetCollection(username string) (Books, error) {
 
 	// Query statement

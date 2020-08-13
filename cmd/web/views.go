@@ -1,30 +1,31 @@
 package main
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
 	"time"
+
 	"github.com/Mr-Schneider/louieslibrary/pkg/models"
 )
 
 // HTMLData models the page data
 type HTMLData struct {
-	Request  		*models.Request
-	Requests 		[]*models.Request
-	User     		*models.User
-	DisplayUser	*models.User
-	Book     		*models.Book
-	Books    		[]*models.Book
-	Reviews  		[]*models.Review
-	Invites  		[]*models.Invite
-	Messages		[]*models.Message
-	Threads			[]*models.Message
-	Path     		string
-	Form     		interface{}
-	Flash    		string
+	Request     *models.Request
+	Requests    []*models.Request
+	User        *models.User
+	DisplayUser *models.User
+	Book        *models.Book
+	Books       []*models.Book
+	Reviews     []*models.Review
+	Invites     []*models.Invite
+	Messages    []*models.Message
+	Threads     []*models.Message
+	Path        string
+	Form        interface{}
+	Flash       string
 }
 
 // humanDate
@@ -33,8 +34,7 @@ func humanDate(t time.Time) string {
 	return t.Format("02 Jan 2006 at 15:04")
 }
 
-// RenderHTML
-// Display the current page based on htmldata
+// RenderHTML display the current page based on htmldata
 func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, data *HTMLData) {
 
 	// Load session
@@ -58,7 +58,6 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	if len(unread) != 0 {
 		session.AddFlash("You have new messages!", "default")
 	}
-
 
 	// Render the base template with target page
 	files := []string{

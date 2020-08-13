@@ -13,8 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// ShowBook
-// Display a page with information on a single book
+// ShowBook display a single book
 func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
@@ -53,8 +52,7 @@ func (app *App) ShowBook(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DownloadBook
-// Send the user the file for the requested book
+// DownloadBook present the book as a file to the user
 func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
@@ -87,18 +85,14 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.%s", book.Title, book.Authors, fileType))
 }
 
-// NewBook
-// Display the new book form
+// NewBook display the new book form
 func (app *App) NewBook(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "newbook.page.html", &HTMLData{
 		Form: &forms.NewBook{},
 	})
 }
 
-// CreateBook
-// Build the new book structure
-// If only volumeid given, grab data from books.google api
-// Otherwise user given information
+// CreateBook build the new book based on given or api data
 func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -114,25 +108,25 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	if r.PostForm.Get("title") == "" {
 
 		// Grab volumeid from form
-		book_info := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
+		bookInfo := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
 
 		// Model the new book on api feedback
 		form := &forms.NewBook{
-			VolumeID:       book_info.Id,
-			Title:          book_info.Data.Title,
-			Subtitle:       book_info.Data.Subtitle,
-			Publisher:      book_info.Data.Publisher,
-			PublishedDate:  book_info.Data.PublishedDate,
-			PageCount:      strconv.Itoa(book_info.Data.PageCount),
-			MaturityRating: book_info.Data.MaturityRating,
-			Authors:        fmt.Sprint(book_info.Data.Authors),
-			Categories:     fmt.Sprint(book_info.Data.Categories),
-			Description:    book_info.Data.Description,
+			VolumeID:       bookInfo.ID,
+			Title:          bookInfo.Data.Title,
+			Subtitle:       bookInfo.Data.Subtitle,
+			Publisher:      bookInfo.Data.Publisher,
+			PublishedDate:  bookInfo.Data.PublishedDate,
+			PageCount:      strconv.Itoa(bookInfo.Data.PageCount),
+			MaturityRating: bookInfo.Data.MaturityRating,
+			Authors:        fmt.Sprint(bookInfo.Data.Authors),
+			Categories:     fmt.Sprint(bookInfo.Data.Categories),
+			Description:    bookInfo.Data.Description,
 			Uploader:       user.Username,
-			Price:          fmt.Sprintf("%.2f %s", book_info.SaleInfo.Retail.Amount, book_info.SaleInfo.Retail.CurrencyCode),
-			ISBN10:         fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[0].Identifier),
-			ISBN13:         fmt.Sprintf("%s %s", book_info.Data.IndustryIdentifiers[0].Type, book_info.Data.IndustryIdentifiers[1].Identifier),
-			ImageLink:      fmt.Sprint(book_info.Data.ImageLinks.Small),
+			Price:          fmt.Sprintf("%.2f %s", bookInfo.SaleInfo.Retail.Amount, bookInfo.SaleInfo.Retail.CurrencyCode),
+			ISBN10:         fmt.Sprintf("%s %s", bookInfo.Data.IndustryIdentifiers[0].Type, bookInfo.Data.IndustryIdentifiers[0].Identifier),
+			ISBN13:         fmt.Sprintf("%s %s", bookInfo.Data.IndustryIdentifiers[0].Type, bookInfo.Data.IndustryIdentifiers[1].Identifier),
+			ImageLink:      fmt.Sprint(bookInfo.Data.ImageLinks.Small),
 		}
 
 		// Display the new book form with the retrived data
@@ -175,7 +169,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	// Read contents of uploaded file
-	file_bytes, err := ioutil.ReadAll(file)
+	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Printf("File Upload Error - %s\n", err)
 		app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
@@ -186,7 +180,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	format := filepath.Ext(handler.Filename)
 
 	// Send book to storage server
-	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s%s", form.VolumeID, format), file_bytes)
+	err = app.UploadBytes(app.BookBucket, fmt.Sprintf("%s%s", form.VolumeID, format), fileBytes)
 	if err != nil {
 		app.ServerError(w, err)
 	}
@@ -211,8 +205,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
 
-// CreateReview
-// Build the new review structure and submit
+// CreateReview build the new review structure and submit
 func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 
 	// Load session
@@ -273,8 +266,7 @@ func (app *App) CreateReview(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.BookID), http.StatusSeeOther)
 }
 
-// ListAllBooks
-// Display a list off all books
+// ListAllBooks display a list off all books
 func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 
 	// Get the books
@@ -290,9 +282,7 @@ func (app *App) ListAllBooks(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// EditBook
-// Show the new book form
-// Filled with the current book data
+// EditBook display the new book form with current data
 func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
@@ -333,8 +323,7 @@ func (app *App) EditBook(w http.ResponseWriter, r *http.Request) {
 	app.RenderHTML(w, r, "newbook.page.html", &HTMLData{Form: form})
 }
 
-// UpdateBook
-// Process a new book form and update an existing book
+// UpdateBook process a new book form and update an existing book
 func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	//Limit upload to 50mb
@@ -371,9 +360,7 @@ func (app *App) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/book/%s", form.VolumeID), http.StatusSeeOther)
 }
 
-// AddToCollection
-// Add a book to the current users collection
-// Requires the target books volumeid as a var
+// AddToCollection add book to a users collection
 func (app *App) AddToCollection(w http.ResponseWriter, r *http.Request) {
 
 	// Get requested book id
