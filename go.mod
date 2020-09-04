@@ -1,4 +1,4 @@
-module github.com/Mr-Schneider/louieslibrary
+module github.com/rssnyder/louieslibrary
 
 go 1.14
 

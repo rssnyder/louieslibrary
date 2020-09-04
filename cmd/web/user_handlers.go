@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
-	"github.com/Mr-Schneider/louieslibrary/pkg/models"
+	"github.com/rssnyder/louieslibrary/pkg/forms"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 	"github.com/gorilla/mux"
 )
 

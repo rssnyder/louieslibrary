@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Mr-Schneider/louieslibrary/pkg/models"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"

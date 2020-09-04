@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Mr-Schneider/louieslibrary/pkg/models"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 )
 
 // LoggedIn get logged in status

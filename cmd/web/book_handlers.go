@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Mr-Schneider/louieslibrary/pkg/forms"
+	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
 )
 
@@ -81,8 +81,13 @@ func (app *App) DownloadBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Present book file to user
-	fileType := strings.Split(key, ".")[1]
-	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.%s", book.Title, book.Authors, fileType))
+	fileType := strings.Split(key, ".")
+	if len(fileType) < 2 {
+		log.Printf("Book requested for download dosnt exist: %s", book.VolumeID)
+		app.NotFound(w)
+		return
+	}
+	app.ServeFile(w, app.BookBucket, key, fmt.Sprintf("%s - %s.%s", book.Title, book.Authors, fileType[1]))
 }
 
 // NewBook display the new book form

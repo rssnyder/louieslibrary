@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Mr-Schneider/louieslibrary/pkg/models"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 )
 
 // HTMLData models the page data
