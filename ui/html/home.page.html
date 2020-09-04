@@ -2,6 +2,9 @@
   Home
 {{end}}
 {{define "page-body"}}
+  {{with .Announcement}}
+    <div class="flash">{{ .Content }} - {{ .Author }}</div>
+  {{end}}
   <h2>Latest Books</h2>
   {{if .Books}}
     <table>

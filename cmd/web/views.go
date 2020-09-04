@@ -18,6 +18,7 @@ type HTMLData struct {
 	User        *models.User
 	DisplayUser *models.User
 	Book        *models.Book
+	Announcement *models.Announcement
 	Books       []*models.Book
 	Reviews     []*models.Review
 	Invites     []*models.Invite

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"log"
 )
 
 // Home display the home page of the sites
@@ -24,6 +25,21 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	books, err := app.DB.LatestBooks(10)
 	if err != nil {
 		app.ServerError(w, err)
+		return
+	}
+
+	// Get announcements, if any
+	announcement, err := app.DB.GetAnnouncement()
+	if (err != nil) {
+		log.Printf("Unable to get announcements: %s", err.Error())
+	} else {
+		log.Printf("There is stuff to display %s", announcement.Content)
+		// Display home page with books and requests + announcements
+		app.RenderHTML(w, r, "home.page.html", &HTMLData{
+			Requests: 		requests,
+			Books:    		books,
+			Announcement: 	announcement,
+		})
 		return
 	}
 

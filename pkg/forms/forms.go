@@ -270,3 +270,10 @@ type NewMessage struct {
 	Content  string
 	Failures map[string]string
 }
+
+// NewAnnouncement model the base announcement structure
+type NewAnnouncement struct {
+	Author   string
+	Content  string
+	Failures map[string]string
+}
