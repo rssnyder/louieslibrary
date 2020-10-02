@@ -117,7 +117,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		
 		// Catch missing ISBN
 		if len(bookInfo.Data.IndustryIdentifiers) < 2 {
-				bookInfo.Data.IndustryIdentifiers[1] := &ISBNResponse{
+				bookInfo.Data.IndustryIdentifiers[1] = ISBNResponse{
 				Type: "None",
 				Identifier: "None",
 			}
