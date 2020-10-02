@@ -114,6 +114,14 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 		// Grab volumeid from form
 		bookInfo := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
+		
+		// Catch missing ISBN
+		if len(bookInfo.Data.IndustryIdentifiers) < 2 {
+				bookInfo.Data.IndustryIdentifiers[1] := &ISBNResponse{
+				Type: "None",
+				Identifier: "None",
+			}
+		}
 
 		// Model the new book on api feedback
 		form := &forms.NewBook{
@@ -130,7 +138,7 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 			Uploader:       user.Username,
 			Price:          fmt.Sprintf("%.2f %s", bookInfo.SaleInfo.Retail.Amount, bookInfo.SaleInfo.Retail.CurrencyCode),
 			ISBN10:         fmt.Sprintf("%s %s", bookInfo.Data.IndustryIdentifiers[0].Type, bookInfo.Data.IndustryIdentifiers[0].Identifier),
-			ISBN13:         fmt.Sprintf("%s %s", bookInfo.Data.IndustryIdentifiers[0].Type, bookInfo.Data.IndustryIdentifiers[1].Identifier),
+			ISBN13:         fmt.Sprintf("%s %s", bookInfo.Data.IndustryIdentifiers[1].Type, bookInfo.Data.IndustryIdentifiers[1].Identifier),
 			ImageLink:      fmt.Sprint(bookInfo.Data.ImageLinks.Small),
 		}
 
