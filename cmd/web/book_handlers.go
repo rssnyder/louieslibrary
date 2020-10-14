@@ -117,10 +117,10 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 		
 		// Catch missing ISBN
 		if len(bookInfo.Data.IndustryIdentifiers) < 2 {
-				bookInfo.Data.IndustryIdentifiers[1] = ISBNResponse{
-				Type: "None",
-				Identifier: "None",
-			}
+				bookInfo.Data.IndustryIdentifiers = append(bookInfo.Data.IndustryIdentifiers, ISBNResponse{
+				Type: "Unknown",
+				Identifier: "ISBN",
+			})
 		}
 
 		// Model the new book on api feedback
