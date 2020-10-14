@@ -3,14 +3,17 @@
 {{end}}
 {{define "page-body"}}
   {{with .Form}}
-    {{if not .VolumeID}}
+    {{if not .ID}}
       <form enctype="multipart/form-data" action="/write/book" method="POST">
+    {{else}}
+      <form enctype="multipart/form-data" action="/book/edit" method="POST">
+    {{end}}
+    {{if not .VolumeID}}
         <div>
           <label>Volume ID:</label>
           <input type="text" name="volumeid" value="{{.VolumeID}}">
         </div>
     {{else}}
-      <form enctype="multipart/form-data" action="/book/edit" method="POST">
         <div>
           <input type="hidden" name="volumeid" value="{{.VolumeID}}">
         </div>
@@ -71,7 +74,7 @@
         </div>
       {{end}}
         <div>
-          <input type="submit" value="Publish book">
+          <input type="submit" value="Submit">
         </div>
     </form>
   {{end}}
