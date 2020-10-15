@@ -19,13 +19,11 @@ func (db *DB) GetAnnouncement() (*Announcement, error) {
 	// Pull data into request
 	err := row.Scan(&a.Author, &a.Content, &a.Created)
 	if err == sql.ErrNoRows {
-		log.Printf("Nothing to return")
 		return a, nil
 	} else if err != nil {
 		return a, err
 	}
 
-	log.Printf("found something")
 	return a, nil
 }
 

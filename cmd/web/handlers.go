@@ -33,7 +33,6 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	if (err != nil) {
 		log.Printf("Unable to get announcements: %s", err.Error())
 	} else {
-		log.Printf("There is stuff to display %s", announcement.Content)
 		// Display home page with books and requests + announcements
 		app.RenderHTML(w, r, "home.page.html", &HTMLData{
 			Requests: 		requests,
