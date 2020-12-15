@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/rssnyder/louieslibrary/pkg/models"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 )
 
 // Cookie Store for user data

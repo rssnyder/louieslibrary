@@ -35,7 +35,7 @@ func (db *DB) InsertAnnouncement(newAnnouncement *forms.NewAnnouncement) (int, e
 
 	// Query statement
 	stmt := `INSERT INTO announcements (author, content, active, created) 
-		VALUES ($1, $2, FALSE, timezone('utc', now())) RETURNING id`
+		VALUES ($1, $2, TRUE, timezone('utc', now())) RETURNING id`
 
 	// Query and fill book structure
 	err := db.QueryRow(stmt, newAnnouncement.Author, newAnnouncement.Content).Scan(&id)
@@ -43,13 +43,13 @@ func (db *DB) InsertAnnouncement(newAnnouncement *forms.NewAnnouncement) (int, e
 		return 0, err
 	}
 
-	log.Printf("New announcement %d uploaded by %s", id, newAnnouncement.Author)
+	log.Printf("New announcement %d uploaded by %s: %s", id, newAnnouncement.Author, newAnnouncement.Content)
 
 	// Return new announcement id
 	return id, nil
 }
 
-// RemoveAnnouncement sets an annoucement to not display 
+// RemoveAnnouncement sets an annoucement to not display
 func (db *DB) RemoveAnnouncement() {
 
 	// Query statement

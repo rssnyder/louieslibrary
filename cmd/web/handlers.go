@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 )
 
 // Home display the home page of the sites
@@ -30,14 +30,14 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 
 	// Get announcements, if any
 	announcement, err := app.DB.GetAnnouncement()
-	if (err != nil) {
+	if err != nil {
 		log.Printf("Unable to get announcements: %s", err.Error())
 	} else {
 		// Display home page with books and requests + announcements
 		app.RenderHTML(w, r, "home.page.html", &HTMLData{
-			Requests: 		requests,
-			Books:    		books,
-			Announcement: 	announcement,
+			Requests:     requests,
+			Books:        books,
+			Announcement: announcement,
 		})
 		return
 	}

@@ -13,20 +13,20 @@ import (
 
 // HTMLData models the page data
 type HTMLData struct {
-	Request     *models.Request
-	Requests    []*models.Request
-	User        *models.User
-	DisplayUser *models.User
-	Book        *models.Book
+	Request      *models.Request
+	Requests     []*models.Request
+	User         *models.User
+	DisplayUser  *models.User
+	Book         *models.Book
 	Announcement *models.Announcement
-	Books       []*models.Book
-	Reviews     []*models.Review
-	Invites     []*models.Invite
-	Messages    []*models.Message
-	Threads     []*models.Message
-	Path        string
-	Form        interface{}
-	Flash       string
+	Books        []*models.Book
+	Reviews      []*models.Review
+	Invites      []*models.Invite
+	Messages     []*models.Message
+	Threads      []*models.Message
+	Path         string
+	Form         interface{}
+	Flash        string
 }
 
 // humanDate

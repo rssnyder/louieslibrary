@@ -1,0 +1,16 @@
+{{define "page-title"}}
+  New Announcement
+{{end}}
+{{define "page-body"}}
+  {{with .Form}}
+      <form action="/announcement/new" method="POST">
+        <div>
+          <label>Content:</label>
+          <input type="text" name="content" value="{{.Content}}">
+        </div>
+        <div>
+          <input type="submit" value="Submit">
+        </div>
+    </form>
+  {{end}}
+{{end}}

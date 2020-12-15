@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
+	"github.com/rssnyder/louieslibrary/pkg/forms"
 )
 
 // ShowRequest display a single request

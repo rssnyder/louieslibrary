@@ -105,7 +105,7 @@ type Messages []*Message
 
 // Announcement model the base announcement structure
 type Announcement struct {
-	Author   string
-	Content  string
-	Created  time.Time
+	Author  string
+	Content string
+	Created time.Time
 }

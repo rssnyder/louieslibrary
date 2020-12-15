@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
+	"github.com/rssnyder/louieslibrary/pkg/forms"
 )
 
 // ShowBook display a single book
@@ -114,11 +114,11 @@ func (app *App) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 		// Grab volumeid from form
 		bookInfo := GetBookInfo(r.PostForm.Get("volumeid"), app.BookAPIKey)
-		
+
 		// Catch missing ISBN
 		if len(bookInfo.Data.IndustryIdentifiers) < 2 {
-				bookInfo.Data.IndustryIdentifiers = append(bookInfo.Data.IndustryIdentifiers, ISBNResponse{
-				Type: "Unknown",
+			bookInfo.Data.IndustryIdentifiers = append(bookInfo.Data.IndustryIdentifiers, ISBNResponse{
+				Type:       "Unknown",
 				Identifier: "ISBN",
 			})
 		}

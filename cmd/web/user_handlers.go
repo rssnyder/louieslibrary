@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/rssnyder/louieslibrary/pkg/models"
-	"github.com/gorilla/mux"
 )
 
 // SignupUser display the signup form

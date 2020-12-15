@@ -38,6 +38,10 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/messages/{reciver}", app.RequireLogin(http.HandlerFunc(app.Messages))).Methods("GET")
 	r.Handle("/messages/{reciver}", app.RequireLogin(http.HandlerFunc(app.CreateMessage))).Methods("POST")
 
+	// Announcements
+	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.NewAnnouncement))).Methods("GET")
+	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.CreateAnnouncement))).Methods("POST")
+
 	// Youtube
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.NewPlaylist))).Methods("GET")
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/gorilla/mux"
+	"github.com/rssnyder/louieslibrary/pkg/forms"
 )
 
 // Messages shows a conversation

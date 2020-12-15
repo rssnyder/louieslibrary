@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/rssnyder/louieslibrary/pkg/models"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/gorilla/sessions"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 )
 
 // App defines the global attributes
