@@ -42,6 +42,8 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.NewAnnouncement))).Methods("GET")
 	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.CreateAnnouncement))).Methods("POST")
 
+	r.Handle("/token/validate", http.HandlerFunc(app.ValidateToken)).Methods("GET")
+
 	// Youtube
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.NewPlaylist))).Methods("GET")
 	r.Handle("/youtube/playlist", app.RequireLogin(http.HandlerFunc(app.DownloadPlaylist))).Methods("POST")

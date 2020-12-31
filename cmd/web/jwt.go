@@ -10,10 +10,16 @@ import (
 	// "os"
 	"strings"
 	"time"
+	"log"
 
 	"github.com/dgrijalva/jwt-go"
 	// "github.com/rssnyder/louieslibrary/pkg/models"
 )
+
+type TokenInfo struct {
+	Valid    bool  `json:"valid"`
+	TimeLeft int64 `json:"time_left"`
+}
 
 type CustomClaims struct {
 	Username string `json:"username"`
@@ -109,4 +115,51 @@ func GetTokenHeader(r *http.Request) string {
 	}
 
 	return tokenData
+}
+
+// ValidateToken validates if a request has a valid token
+func (app *App) ValidateToken(w http.ResponseWriter, r *http.Request) {
+
+	// Data to return
+	var tokenInfo TokenInfo
+
+	// Get token from header
+	token := GetTokenHeader(r)
+	if token == "" {
+		JSONResponse(w, 401, "")
+		return
+	}
+
+	// Verify valitity of token
+	_, _, left, err := app.VerifyJWT(token)
+	if err != nil {
+		log.Println("Invalid token verify")
+		JSONResponse(w, 401, "")
+		return
+	}
+
+	// Token valid, return time left
+	tokenInfo.TimeLeft = left
+	tokenInfo.Valid = true
+	JSONResponse(w, 200, tokenInfo)
+	return
+}
+
+// ValidateRequest validates if a request has a valid token
+func (app *App) ValidateRequest(w http.ResponseWriter, r *http.Request) bool {
+
+	// Get token from header
+	token := GetTokenHeader(r)
+	if token == "" {
+		return false
+	}
+
+	// Verify valitity of token
+	_, _, _, err := app.VerifyJWT(token)
+	if err != nil {
+		return false
+	}
+
+	// Token valid, return time left
+	return true
 }
