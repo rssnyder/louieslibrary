@@ -2,12 +2,20 @@ package main
 
 import (
 	"fmt"
+	// "encoding/json"
 	"net/http"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/gorilla/mux"
 	"github.com/rssnyder/louieslibrary/pkg/forms"
 	"github.com/rssnyder/louieslibrary/pkg/models"
 )
+
+// UserLogin holds login data
+type UserLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 // SignupUser display the signup form
 func (app *App) SignupUser(w http.ResponseWriter, r *http.Request) {
@@ -134,11 +142,29 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Store user login
+	var userLogin UserLogin
+	// decoder := json.NewDecoder(r.Body)
+
+	userLogin = UserLogin{
+		Username: r.PostForm.Get("username"),
+		Password: r.PostForm.Get("password"),
+	}
+
+	// Get login info from request
+	// err = decoder.Decode(&userLogin)
+	// if err != nil {
+	// 	app.ClientError(w, http.StatusBadRequest)
+	// 	return
+	// }
+	// defer r.Body.Close()
+
 	// Authenticate the user
 	user := &models.User{}
-	user, err = app.DB.AuthenticateUser(r.PostForm.Get("username"), r.PostForm.Get("password"))
+	fail := &models.User{}
+	user, err = app.DB.AuthenticateUser(userLogin.Username, userLogin.Password)
 
-	if user == (&models.User{}) {
+	if cmp.Equal(user, fail) {
 
 		session.AddFlash("Invalid Login", "default")
 
@@ -151,7 +177,21 @@ func (app *App) VerifyUser(w http.ResponseWriter, r *http.Request) {
 
 		// Redirect to login page
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
+		// Invalid login attempt
+		// w.Header().Set("Content-Type", "application/json")
+		// w.WriteHeader(http.StatusOK)
+		// json.NewEncoder(w).Encode("{'error':'yes'}")
+		// return
 	}
+
+	// Get signed JWT
+	token, err := app.SignJWT(user.Username, user.Role)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+	session.Values["louiesjwt"] = token
 
 	// Save user info
 	session.Values["user"] = user

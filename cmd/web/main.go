@@ -35,6 +35,7 @@ func main() {
 	storageSecret := flag.String("storage_secret", "secret", "s3 access secret")
 	tlsCert := flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
 	tlsKey := flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
+	jwtKey := flag.String("jwt-key", "supersecure", "JWT secure string")
 
 	flag.Parse()
 
@@ -50,17 +51,19 @@ func main() {
 
 	// Register user type for storing in sessions
 	gob.Register(&models.User{})
+	gob.Register(&UserToken{})
 
 	// Application instance
 	app := &App{
-		HTMLDir:    *htmlDir,
-		StaticDir:  *staticDir,
-		YoutubeDir: *youtubeDir,
-		DB:         &models.DB{db},
-		Storage:    storage,
-		BookBucket: *bookBucket,
-		BookAPIKey: *bookAPIKey,
-		Sessions:   sessionStore,
+		HTMLDir:      *htmlDir,
+		StaticDir:    *staticDir,
+		YoutubeDir:   *youtubeDir,
+		DB:           &models.DB{db},
+		Storage:      storage,
+		BookBucket:   *bookBucket,
+		BookAPIKey:   *bookAPIKey,
+		Sessions:     sessionStore,
+		SecureString: []byte(*jwtKey),
 	}
 
 	//Start server, quit on failure

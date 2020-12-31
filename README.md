@@ -25,3 +25,5 @@ TODO:
 
 
 Implimented using Go 1.14 and PostgreSQL 12. Hosted on Linode with Ubuntu 20.04LTS.
+
+This is mostly a project to mess around with go and web dev stuff (a)
