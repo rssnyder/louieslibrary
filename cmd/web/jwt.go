@@ -3,17 +3,20 @@ package main
 import (
 	// "archive/zip"
 	// "crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	// "fmt"
 	// "io/ioutil"
 	"net/http"
 	// "os"
+	"log"
 	"strings"
 	"time"
-	"log"
 
 	"github.com/dgrijalva/jwt-go"
-	// "github.com/rssnyder/louieslibrary/pkg/models"
+	"github.com/google/go-cmp/cmp"
+	"github.com/rssnyder/louieslibrary/pkg/models"
 )
 
 type TokenInfo struct {
@@ -162,4 +165,47 @@ func (app *App) ValidateRequest(w http.ResponseWriter, r *http.Request) bool {
 
 	// Token valid, return time left
 	return true
+}
+
+// GetJWT authenticates a user
+func (app *App) GetJWT(w http.ResponseWriter, r *http.Request) {
+
+	// Get basic auth
+	auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+
+	if len(auth) != 2 || auth[0] != "Basic" {
+		http.Error(w, "authorization failed", http.StatusUnauthorized)
+		return
+	}
+
+	payload, _ := base64.StdEncoding.DecodeString(auth[1])
+	pair := strings.SplitN(string(payload), ":", 2)
+
+	if len(pair) != 2 {
+		http.Error(w, "authorization failed", http.StatusUnauthorized)
+		return
+	}
+
+	// Authenticate the user
+	user := &models.User{}
+	fail := &models.User{}
+	user, err := app.DB.AuthenticateUser(pair[0], pair[1])
+
+	if cmp.Equal(user, fail) {
+
+		// Invalid login attempt
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("{'error':'yes'}")
+		return
+	}
+
+	// Get signed JWT
+	token, err := app.SignJWT(user.Username, user.Role)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	JSONResponse(w, 200, token)
 }

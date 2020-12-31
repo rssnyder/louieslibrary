@@ -26,4 +26,19 @@ TODO:
 
 Implimented using Go 1.14 and PostgreSQL 12. Hosted on Linode with Ubuntu 20.04LTS.
 
-This is mostly a project to mess around with go and web dev stuff (a)
+## API Access
+
+Get a token:
+```
+http -a <username>:<password> https://library.rileysnyder.org/token/get
+```
+
+Check current token:
+```
+http https://library.rileysnyder.org/token/validate Authorization:' token <token>'
+```
+
+Use token to make requests:
+```
+http https://library.rileysnyder.org/book/all Authorization:' token <token>'
+```

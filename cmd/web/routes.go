@@ -42,6 +42,7 @@ func (app *App) Routes() *mux.Router {
 	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.NewAnnouncement))).Methods("GET")
 	r.Handle("/announcement/new", app.RequireWriter(http.HandlerFunc(app.CreateAnnouncement))).Methods("POST")
 
+	r.Handle("/token/get", http.HandlerFunc(app.GetJWT)).Methods("GET")
 	r.Handle("/token/validate", http.HandlerFunc(app.ValidateToken)).Methods("GET")
 
 	// Youtube
